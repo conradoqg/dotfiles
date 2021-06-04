@@ -19,19 +19,21 @@ environment() {
 }
 
 github_download_and_install() {
-	tmp_dir=$(mktemp -d -t ci-XXXXXXXXXX)
-	curl -fsL https://www.github.com/$1/releases/latest/download/$2 -o $tmp_dir/$2
-	if [ "$4" == "tgz" ]; then		
-		tar -xzvf $tmp_dir/$2 -C $tmp_dir
-	elif [ "$4" == "zip" ]; then
-		unzip -o -d $tmp_dir $tmp_dir/$2
-	else
-		echo "Unknown file type"
-		exit 1
+	if [ ! -f ~/.local/bin/$4 ]; then
+		tmp_dir=$(mktemp -d -t ci-XXXXXXXXXX)
+		curl -fsL https://www.github.com/$1/releases/latest/download/$2 -o $tmp_dir/$2
+		if [ "$5" == "tgz" ]; then		
+			tar -xzvf $tmp_dir/$2 -C $tmp_dir
+		elif [ "$5" == "zip" ]; then
+			unzip -o -d $tmp_dir $tmp_dir/$2
+		else
+			echo "Unknown file type"
+			exit 1
+		fi
+		chmod +x $tmp_dir/$3
+		mv $tmp_dir/$3 ~/.local/bin
+		rm -rf $tmp_dir
 	fi
-	chmod +x $tmp_dir/$3
-	sudo mv $tmp_dir/$3 /usr/local/bin
-	rm -rf $tmp_dir
 }
 
 environment
@@ -59,8 +61,10 @@ if [ "$machine" != "MinGw" ]; then
 		glances -y
 
 	echo "Installing standalone binaries"
-	github_download_and_install "extrawurst/gitui" "gitui-linux-musl.tar.gz" "gitui" "tgz"
-	github_download_and_install "jesseduffield/lazygit" "lazygit_0.28.1_Linux_x86_64.tar.gz" "lazygit" "tgz"
-	github_download_and_install "ogham/exa" "exa-linux-x86_64-v0.10.1.zip" "bin/exa" "zip"
+	github_download_and_install "extrawurst/gitui" "gitui-linux-musl.tar.gz" "gitui" "gitui" "tgz"
+	github_download_and_install "jesseduffield/lazygit" "lazygit_0.28.1_Linux_x86_64.tar.gz" "lazygit" "lazygit" "tgz"
+	github_download_and_install "ogham/exa" "exa-linux-x86_64-v0.10.1.zip" "bin/exa" "exa" "zip"
 
+	echo "Installing scripts"
+	sudo mv scripts/* ~/.local/bin
 fi

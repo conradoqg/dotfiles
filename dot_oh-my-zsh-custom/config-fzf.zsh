@@ -28,4 +28,4 @@
 setopt glob_dots
 
 zstyle ':fzf-tab:*' fzf-bindings 'tab:accept' 'space:toggle'
-
+zstyle ':fzf-tab:complete:*' fzf-preview 'preview $realpath'
