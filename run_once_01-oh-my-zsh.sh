@@ -10,6 +10,8 @@ git -C ~/.oh-my-zsh-custom/plugins/zsh-autosuggestions pull || git clone --depth
 
 git -C ~/.oh-my-zsh-custom/plugins/zsh-syntax-highlighting pull || git clone --depth 1 https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.oh-my-zsh-custom/plugins/zsh-syntax-highlighting
 
+git -C ~/.oh-my-zsh-custom/plugins/fzf-tab pull || git clone --depth 1 https://github.com/Aloxaf/fzf-tab ~/.oh-my-zsh-custom/plugins/fzf-tab
+
 echo "Clonning or updating theme"
 
 git -C ~/.oh-my-zsh-custom/themes/powerlevel10k pull || git clone --depth 1 https://github.com/romkatv/powerlevel10k.git ~/.oh-my-zsh-custom/themes/powerlevel10k
