@@ -55,6 +55,7 @@ if [ "$machine" != "MinGw" ]; then
 		direnv \
 		xclip xsel \
 		zip unzip \
+		bpytop \
 		glances -y
 
 	echo "Installing standalone binaries"

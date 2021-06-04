@@ -52,6 +52,7 @@ $ sh -c "$(curl -fsLS git.io/chezmoi)" -- init --apply
 - [gitui](https://github.com/extrawurst/gitui)
 - [lazygit](https://github.com/jesseduffield/lazygit)
 - [exa](https://github.com/ogham/exa)
+- [bpytop](https://github.com/aristocratos/bpytop)
 
 ## Shortcuts
 
