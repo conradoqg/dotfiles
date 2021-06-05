@@ -35,6 +35,8 @@ $ sh -c "$(curl -fsLS git.io/chezmoi)" -- init --apply
 	- [git-flow](https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/git-flow)
 	- [direnv](https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/direnv)
 	- [sudo](https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/sudo)
+	- [colored-man-pages](https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/colored-man-pages)
+	- [you-should-use](https://github.com/MichaelAquilina/zsh-you-should-use)
 
 ## Installed packages
 
@@ -53,6 +55,7 @@ $ sh -c "$(curl -fsLS git.io/chezmoi)" -- init --apply
 - [lazygit](https://github.com/jesseduffield/lazygit)
 - [exa](https://github.com/ogham/exa)
 - [bpytop](https://github.com/aristocratos/bpytop)
+- [alias-finder](https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/alias-finder)
 
 ## Shortcuts
 
@@ -60,4 +63,5 @@ $ sh -c "$(curl -fsLS git.io/chezmoi)" -- init --apply
 
 ## Aliases
 - readme: See this file
+- preview: See the contents of a file or a dir
 
