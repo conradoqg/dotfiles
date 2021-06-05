@@ -64,4 +64,6 @@ $ sh -c "$(curl -fsLS git.io/chezmoi)" -- init --apply
 ## Aliases
 - readme: See this file
 - preview: See the contents of a file or a dir
+- bat: batcat
+- n: nano
 
