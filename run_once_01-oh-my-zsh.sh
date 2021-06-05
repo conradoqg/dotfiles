@@ -10,7 +10,7 @@ function pull_or_clone() {
 
 echo "Clonning or updating oh-my-zsh"
 
-pull_or_clone ~/.oh-my-zsh pull https://github.com/ohmyzsh/ohmyzsh.git
+pull_or_clone ~/.oh-my-zsh https://github.com/ohmyzsh/ohmyzsh.git
 
 echo "Clonning or updating plugins"
 
