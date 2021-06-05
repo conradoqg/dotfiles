@@ -57,14 +57,14 @@ if [ "$machine" != "MinGw" ]; then
 		direnv \
 		xclip xsel \
 		zip unzip \
-		bpytop \
-		glances -y
+		glances \
+		pip -y
 
 	echo "Installing standalone binaries"
 	github_download_and_install "extrawurst/gitui" "gitui-linux-musl.tar.gz" "gitui" "gitui" "tgz"
 	github_download_and_install "jesseduffield/lazygit" "lazygit_0.28.1_Linux_x86_64.tar.gz" "lazygit" "lazygit" "tgz"
 	github_download_and_install "ogham/exa" "exa-linux-x86_64-v0.10.1.zip" "bin/exa" "exa" "zip"
 
-	echo "Installing scripts"
-	sudo mv scripts/* ~/.local/bin
+	echo "Install pip binaries"
+	pip install bpytop
 fi

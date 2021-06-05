@@ -56,8 +56,8 @@ $ sh -c "$(curl -fsLS git.io/chezmoi)" -- init --apply
 
 ## Shortcuts
 
-- <kbd>Ctrl</kbd> + <kbd><T></kbd>: FZF
+- <kbd>Ctrl</kbd> + <kbd>T</kbd>: FZF
 
-## Aliaes
+## Aliases
 - readme: See this file
 
