@@ -113,7 +113,8 @@ source $ZSH/oh-my-zsh.sh
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 export PATH=~/.local/bin:$PATH
-export EDITOR=$(which nano)
+export EDITOR=$(which micro)
+export MICRO_TRUECOLOR=1
 
 # Generated for envman. Do not edit.
 [ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"

@@ -59,10 +59,9 @@ if [ "$machine" != "MinGw" ]; then
 		htop \
 		git-extras git-flow \
 		direnv \
-		xclip xsel \
 		zip unzip \
 		glances \
-		nano \
+		micro \
 		pip -y
 
 	echo "Installing standalone binaries"
