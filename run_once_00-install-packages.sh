@@ -21,11 +21,15 @@ environment() {
 github_download_and_install() {
 	if [ ! -f ~/.local/bin/$4 ]; then
 		tmp_dir=$(mktemp -d -t ci-XXXXXXXXXX)
-		curl -fsL https://www.github.com/$1/releases/latest/download/$2 -o $tmp_dir/$2
-		if [ "$5" == "tgz" ]; then		
-			tar -xzvf $tmp_dir/$2 -C $tmp_dir
+		url=$(curl -s https://api.github.com/repos/$1/releases/latest | grep -o "$2")
+		basename=$(basename $url)
+
+		curl -fsL $url -o $tmp_dir/$basename
+
+		if [ "$5" == "tar.gz" ]; then
+			tar -xzvf $tmp_dir/$basename -C $tmp_dir
 		elif [ "$5" == "zip" ]; then
-			unzip -o -d $tmp_dir $tmp_dir/$2
+			unzip -o -d $tmp_dir $tmp_dir/$basename
 		else
 			echo "Unknown file type"
 			exit 1
@@ -42,7 +46,7 @@ echo "Environment found: $machine"
 
 if [ "$machine" != "MinGw" ]; then
 	echo "Installing APT packages"
-	sudo apt-get update 
+	sudo apt-get update
 	sudo apt-get install \
 		git \
 		zsh \
@@ -58,12 +62,15 @@ if [ "$machine" != "MinGw" ]; then
 		xclip xsel \
 		zip unzip \
 		glances \
+		nano \
 		pip -y
 
 	echo "Installing standalone binaries"
-	github_download_and_install "extrawurst/gitui" "gitui-linux-musl.tar.gz" "gitui" "gitui" "tgz"
-	github_download_and_install "jesseduffield/lazygit" "lazygit_0.28.1_Linux_x86_64.tar.gz" "lazygit" "lazygit" "tgz"
-	github_download_and_install "ogham/exa" "exa-linux-x86_64-v0.10.1.zip" "bin/exa" "exa" "zip"
+	github_download_and_install "extrawurst/gitui" "https://.*gitui-linux-musl.tar.gz" "gitui" "gitui" "tar.gz"
+	github_download_and_install "jesseduffield/lazygit" "https://.*_Linux_x86_64.tar.gz" "lazygit" "lazygit" "tar.gz"
+	github_download_and_install "ogham/exa" "https://.*-linux-x86_64-v.*.zip" "bin/exa" "exa" "zip"
+
+	curl -sS https://webinstall.dev/k9s | bash
 
 	echo "Install pip binaries"
 	pip install bpytop

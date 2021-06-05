@@ -13,7 +13,7 @@ export FZF_CTRL_T_OPTS="
 	--bind 'tab:accept'
 	--bind 'space:toggle'
 	--prompt='∼ '
-       	--pointer='▶' 
+    --pointer='▶'
 	--marker='✓'
 	--ansi
 "
@@ -28,6 +28,10 @@ export FZF_CTRL_R_OPTS="
 export FZF_ALT_C_COMMAND='fdfind -t d --hidden --follow -c always --exclude .git'
 
 export FZF_ALT_C_OPTS="$FZF_CTRL_T_OPTS"
+
+export FZF_ALT_E_COMMAND='fdfind -t f --hidden --follow -c always'
+
+export FZF_ALT_E_OPTS="$FZF_CTRL_T_OPTS"
 
 export FZF_COMPLETION_OPTS="$FZF_CTRL_T_OPTS"
 

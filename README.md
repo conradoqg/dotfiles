@@ -56,6 +56,7 @@ $ sh -c "$(curl -fsLS git.io/chezmoi)" -- init --apply
 - [exa](https://github.com/ogham/exa)
 - [bpytop](https://github.com/aristocratos/bpytop)
 - [alias-finder](https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/alias-finder)
+- [k9s](https://github.com/derailed/k9s)
 
 ## Shortcuts
 

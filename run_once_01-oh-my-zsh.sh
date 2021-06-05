@@ -1,9 +1,11 @@
 #!/bin/bash
 
+set -e
+
 # $1 Destination
 # $2 Git URL
 function pull_or_clone() {
-	git -C ~/.oh-my-zsh pull 2> /dev/null || git clone --depth 1 https://github.com/ohmyzsh/ohmyzsh.git ~/.oh-my-zsh 
+	git -C $1 pull 2> /dev/null || git clone --depth 1 $2 $1 
 }
 
 echo "Clonning or updating oh-my-zsh"
@@ -26,7 +28,7 @@ pull_or_clone ~/.oh-my-zsh-custom/themes/powerlevel10k https://github.com/romkat
 
 echo "Making ZSH the default shell"
 
-if [[ $(grep $USER </etc/passwd | cut -f 7 -d ":") != $(which zsh) ]]; then 
+if [[ $(grep $(whoami) </etc/passwd | cut -f 7 -d ":") != $(which zsh) ]]; then 
 	chsh -s $(which zsh)
 else
 	echo "Already default"
