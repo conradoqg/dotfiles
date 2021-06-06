@@ -1,4 +1,5 @@
 {
     "clipboard": "internal",
-    "colorscheme": "dracula"
+    "colorscheme": "dracula",
+    "ruler": false
 }

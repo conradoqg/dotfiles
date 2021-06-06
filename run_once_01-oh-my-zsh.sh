@@ -16,7 +16,7 @@ echo "Clonning or updating plugins"
 
 pull_or_clone ~/.oh-my-zsh-custom/plugins/zsh-autosuggestions https://github.com/zsh-users/zsh-autosuggestions.git
 
-pull_or_clone ~/.oh-my-zsh-custom/plugins/zsh-syntax-highlighting https://github.com/zsh-users/zsh-syntax-highlighting.git
+pull_or_clone ~/.oh-my-zsh-custom/plugins/fast-syntax-highlighting https://github.com/zdharma/fast-syntax-highlighting.git
 
 pull_or_clone ~/.oh-my-zsh-custom/plugins/fzf-tab https://github.com/Aloxaf/fzf-tab 
 
