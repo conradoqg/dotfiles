@@ -4,14 +4,18 @@
 #--bind 'ctrl-e:execute:(echo {+} | xargs -o vim > /dev/tty)'
 
 export FZF_CTRL_R_OPTS="
+	--height 30%
 	--header='tab:accept'
 	--bind 'tab:accept'
 	--prompt='∼ '
 	--pointer='▶'
-	--reverse
+	--reverse	
 "
 
+# FZF-**
+
 export FZF_COMPLETION_OPTS="
+	--height 30%
 	--header 'tab:accept, space:toggle, ctrl-a:toggle-all, ctrl-v:preview'
 	--preview-window=:hidden
 	--preview 'preview {}'
@@ -41,6 +45,7 @@ zstyle ':fzf-tab:*' fzf-bindings \
 	'tab:accept' \
 	'space:toggle'
 zstyle ':fzf-tab:*' fzf-flags \
+	'--height=30%' \
 	'--header=tab:accept, space:toggle, ctrl-a:toggle-all, ctrl-v:preview' \
 	'--preview-window=:hidden' \
 	'--prompt=∼ ' \
