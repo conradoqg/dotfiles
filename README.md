@@ -41,11 +41,14 @@ $ sh -c "$(curl -fsLS git.io/chezmoi)" -- init --apply
 
 ## Installed packages
 
-- [batcat](https://github.com/sharkdp/bat)
+- most
+- [tree](https://github.com/kddeisz/tree)
+- [ncdu](https://dev.yorhel.nl/ncdu)
+- [htop](https://htop.dev/)
+- [jq](https://stedolan.github.io/jq/)
+- [yq](https://github.com/mikefarah/yq)
 - [fzf](https://github.com/junegunn/fzf)
-- tree
-- ncdu
-- htop
+- [bat](https://github.com/sharkdp/bat)
 - [git-extras](https://github.com/tj/git-extras)
 - [gitflow](https://github.com/nvie/gitflow/wiki/Linux)
 - [direnv](https://direnv.net/)
@@ -58,6 +61,11 @@ $ sh -c "$(curl -fsLS git.io/chezmoi)" -- init --apply
 - [alias-finder](https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/alias-finder)
 - [k9s](https://github.com/derailed/k9s)
 - [micro](https://github.com/zyedidia/micro)
+- [duf](https://github.com/muesli/duf)
+- [dog](https://github.com/ogham/dog)
+- [broot](https://github.com/Canop/broot)
+- [ctop](https://github.com/bcicen/ctop)
+- [mtr](http://www.bitwizard.nl/mtr/)
 
 ## Shortcuts
 
