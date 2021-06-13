@@ -85,4 +85,9 @@ $ sh -c "$(curl -fsLS git.io/chezmoi)" -- init --apply
 ## Scripts
 - `preview`: See the contents of a file or a dir
 
+## Useful links
+- [The 50 Most Useful Linux Commands To Run in the Terminal](https://www.ubuntupit.com/best-linux-commands-to-run-in-the-terminal/)
+- [Unix System Monitoring and Diagnostic CLI Tools](https://monadical.com/posts/system-monitoring-tools.html)
+- [Linux CLI Tools](https://wiki.tilde.fun/admin/linux/cli/start)
+- [Linux Performance](http://www.brendangregg.com/linuxperf.html)
 
