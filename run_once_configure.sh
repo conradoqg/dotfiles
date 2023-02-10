@@ -168,9 +168,7 @@ function install_apt() {( set -e
 		git \
 		zsh \
 		vim \
-		fd-find \
 		tree \
-		bat \
 		most \
 		ncdu \
 		htop \
@@ -210,21 +208,21 @@ function install_pip() {( set -e
 )}
 
 function install_ohmyzsh() {( set -e
-	pull_or_clone ~/.oh-my-zsh https://github.com/ohmyzsh/ohmyzsh.git
+	pull_or_clone ~/.oh-my-zsh git@github.com/ohmyzsh/ohmyzsh.git
 )}
 
 function install_ohmyzsh_plugins() {( set -e
-	pull_or_clone ~/.oh-my-zsh-custom/plugins/zsh-autosuggestions https://github.com/zsh-users/zsh-autosuggestions.git
+	pull_or_clone ~/.oh-my-zsh-custom/plugins/zsh-autosuggestions git@github.com:zsh-users/zsh-autosuggestions.git
 
-	pull_or_clone ~/.oh-my-zsh-custom/plugins/fast-syntax-highlighting https://github.com/zdharma/fast-syntax-highlighting.git
+	pull_or_clone ~/.oh-my-zsh-custom/plugins/fast-syntax-highlighting git@github.com:zdharma-continuum/fast-syntax-highlighting.git
 
-	pull_or_clone ~/.oh-my-zsh-custom/plugins/fzf-tab https://github.com/Aloxaf/fzf-tab 
+	pull_or_clone ~/.oh-my-zsh-custom/plugins/fzf-tab git@github.com:Aloxaf/fzf-tab 
 
-	pull_or_clone ~/.oh-my-zsh-custom/plugins/you-should-use https://github.com/MichaelAquilina/zsh-you-should-use
+	pull_or_clone ~/.oh-my-zsh-custom/plugins/you-should-use git@github.com:MichaelAquilina/zsh-you-should-use
 )}
 
 function install_powerlevel10k() {( set -e
-	pull_or_clone ~/.oh-my-zsh-custom/themes/powerlevel10k https://github.com/romkatv/powerlevel10k.git
+	pull_or_clone ~/.oh-my-zsh-custom/themes/powerlevel10k git@github.com:romkatv/powerlevel10k.git
 )}
 
 function make_zsh_default() {( set -e
