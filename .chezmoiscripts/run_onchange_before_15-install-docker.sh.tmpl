@@ -1,0 +1,33 @@
+#!/bin/bash
+# Installs Docker Engine (docker-ce) from Docker's official apt repository.
+# Only on native Linux with apt AND not WSL2 (on WSL, Docker Desktop integration
+# is used instead; installing docker-ce there would conflict).
+#
+#   os         = {{ .os }}
+#   isWSL      = {{ .isWSL }}
+#   pkgManager = {{ .pkgManager }}
+{{ if and (eq .pkgManager "apt") (not .isWSL) (not (env "DOTFILES_NO_PROVISION")) -}}
+set -euo pipefail
+
+SUDO=""
+if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null 2>&1; then SUDO="sudo"; fi
+
+if command -v docker >/dev/null 2>&1; then
+    echo "==> docker already installed; skipping"
+else
+    echo "==> installing docker-ce from Docker's official apt repo"
+    . /etc/os-release
+    $SUDO install -m 0755 -d /etc/apt/keyrings
+    curl -fsSL "https://download.docker.com/linux/${ID}/gpg" \
+        | $SUDO gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+    $SUDO chmod a+r /etc/apt/keyrings/docker.gpg
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/${ID} ${VERSION_CODENAME} stable" \
+        | $SUDO tee /etc/apt/sources.list.d/docker.list >/dev/null
+    $SUDO apt-get update -qq
+    $SUDO apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+    $SUDO usermod -aG docker "$(id -un)" || true
+    echo "==> docker-ce installed (log out/in for the docker group to take effect)"
+fi
+{{ else -}}
+: # docker-ce skipped (not native-Linux/apt, or WSL, or DOTFILES_NO_PROVISION set)
+{{ end -}}

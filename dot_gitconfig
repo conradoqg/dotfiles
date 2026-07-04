@@ -1,0 +1,20 @@
+[user]
+	name = Conrado Quilles Gomes
+	email = conrado.gomes@totvs.com.br
+[pack]
+	windowMemory = 100m
+	packSizeLimit = 100m
+	threads = 1
+
+# git-delta: better diffs (syntax highlight, navigation)
+[core]
+	pager = delta
+[interactive]
+	diffFilter = delta --color-only
+[delta]
+	navigate = true
+	line-numbers = true
+[merge]
+	conflictstyle = zdiff3
+[diff]
+	colorMoved = default

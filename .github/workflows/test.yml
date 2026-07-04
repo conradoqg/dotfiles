@@ -24,8 +24,8 @@ jobs:
             --build-arg CHEZMOI_GITHUB_ACCESS_TOKEN=${{ secrets.GITHUB_TOKEN }} \
             --progress plain .
 
-  # Docker não roda macOS (kernel/licença Apple), então testamos o caminho brew
-  # num runner macOS real (macos-14 = Apple Silicon / arm64).
+  # Docker cannot run macOS (Apple kernel/license), so we test the brew path
+  # on a real macOS runner (macos-14 = Apple Silicon / arm64).
   macos:
     name: fresh-install macOS (arm64, brew)
     runs-on: macos-14
@@ -37,11 +37,12 @@ jobs:
         run: |
           sh -c "$(curl -fsLS get.chezmoi.io)" -- \
             -b "$HOME/.local/bin" init --apply --source="$PWD"
-      - name: Validar binários (brew)
+      - name: Validate binaries (brew)
         run: |
           set -e
           export PATH="/opt/homebrew/bin:$HOME/.local/bin:$PATH"
-          for b in eza doggo gitui lazygit lazydocker duf yq ctop k9s micro broot fzf walk dysk jnv btop bat fd; do
-            command -v "$b" >/dev/null || { echo "FALTOU: $b"; exit 1; }
+          for b in eza doggo gitui lazygit lazydocker duf yq ctop k9s micro broot fzf walk dysk jnv btop bat fd \
+                   rg zoxide delta miniserve fortio kubectl terraform; do
+            command -v "$b" >/dev/null || { echo "MISSING: $b"; exit 1; }
           done
           chezmoi verify --source="$PWD" --exclude=scripts

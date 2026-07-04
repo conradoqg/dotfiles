@@ -1,3 +1,3 @@
-{{/* Alvos a remover de todas as máquinas (configs de ferramentas descontinuadas). */}}
+{{/* Targets to remove from every machine (configs of discontinued tools). */}}
 .config/colorls
 .config/bpytop

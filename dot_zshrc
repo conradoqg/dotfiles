@@ -150,3 +150,6 @@ export PATH=/home/conradoqg/.opencode/bin:$PATH
 # Added by codebase-memory-mcp install
 export PATH="/home/conradoqg/.local/bin:$PATH"
 export PATH="$PATH:/snap/bin"
+
+# zoxide: smarter cd (provides `z`); no-op if not installed
+command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init zsh)"

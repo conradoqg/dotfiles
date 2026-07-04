@@ -1,13 +1,13 @@
 #!/bin/bash
-# Instala pacotes do gerenciador nativo. Re-executa automaticamente quando a
-# lista abaixo muda (o conteúdo renderizado faz parte do hash do run_onchange).
+# Installs packages from the native package manager. Re-runs automatically when
+# the list below changes (the rendered content is part of the run_onchange hash).
 #
 #   os         = {{ .os }}
 #   arch       = {{ .arch }}
 #   pkgManager = {{ .pkgManager }}
 #
-# No Linux, os binários modernos (eza, lazygit, ...) vêm de .chezmoiexternal.toml;
-# aqui só o que o gerenciador nativo cobre. No macOS o brew cobre tudo.
+# On Linux, the modern binaries (eza, lazygit, ...) come from .chezmoiexternal.toml;
+# here only what the native package manager covers. On macOS, brew covers everything.
 set -euo pipefail
 
 SUDO=""
@@ -24,37 +24,40 @@ PACKAGES=(
     bat fd-find
     btop
 )
-echo "==> apt: atualizando índice"
+echo "==> apt: updating index"
 $SUDO apt-get update -qq
-echo "==> apt: instalando ${#PACKAGES[@]} pacotes"
+echo "==> apt: installing ${#PACKAGES[@]} packages"
 $SUDO apt-get install -y --no-install-recommends "${PACKAGES[@]}"
 
 {{ else if eq .pkgManager "brew" -}}
-# macOS (e Linuxbrew): brew cobre base + binários modernos, já que os externals
-# de binário são só para Linux.
+# macOS (and Linuxbrew): brew covers base + modern binaries, since the binary
+# externals are Linux-only.
+brew tap hashicorp/tap >/dev/null 2>&1 || true
 PACKAGES=(
     git zsh
     eza doggo gitui lazygit lazydocker duf yq ctop k9s micro broot fzf
     walk dysk jnv
     btop bat fd
+    ripgrep zoxide git-delta miniserve fortio kubernetes-cli
     tree ncdu htop mtr jq direnv git-extras git-flow
+    hashicorp/tap/terraform
 )
-echo "==> brew: instalando ${#PACKAGES[@]} fórmulas"
+echo "==> brew: installing ${#PACKAGES[@]} formulae"
 brew install "${PACKAGES[@]}" || true
 
 {{ else -}}
-echo "AVISO: pkgManager '{{ .pkgManager }}' não suportado neste OS ({{ .os }})." >&2
-echo "       Instale manualmente: zsh, git, btop, bat, fd, e um editor." >&2
+echo "WARNING: pkgManager '{{ .pkgManager }}' is not supported on this OS ({{ .os }})." >&2
+echo "         Install manually: zsh, git, btop, bat, fd, and an editor." >&2
 {{ end -}}
 
-# zsh como shell padrão (idempotente; ignora falha em ambientes sem chsh/PAM)
+# Make zsh the default shell (idempotent; ignores failure where chsh/PAM is absent)
 if command -v zsh >/dev/null 2>&1; then
     zsh_path="$(command -v zsh)"
     current_shell="$(getent passwd "$(id -un)" 2>/dev/null | cut -d: -f7 || echo "")"
     if [ "$current_shell" != "$zsh_path" ]; then
-        echo "==> definindo zsh como shell padrão"
+        echo "==> setting zsh as the default shell"
         $SUDO chsh -s "$zsh_path" "$(id -un)" 2>/dev/null \
             || chsh -s "$zsh_path" 2>/dev/null \
-            || echo "   (não foi possível alterar o shell automaticamente; ignore em container)"
+            || echo "   (could not change the shell automatically; ignore inside a container)"
     fi
 fi

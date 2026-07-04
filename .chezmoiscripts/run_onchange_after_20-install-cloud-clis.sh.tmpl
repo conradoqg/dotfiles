@@ -1,0 +1,52 @@
+#!/bin/bash
+# Installs cloud CLIs: AWS CLI v2 and Google Cloud CLI.
+# Idempotent (guards on `command -v`) and non-fatal (a failing installer warns
+# but does not abort the rest). macOS uses Homebrew; Linux uses official installers.
+#
+#   os         = {{ .os }}
+#   arch       = {{ .arch }}
+#   pkgManager = {{ .pkgManager }}
+{{ if env "DOTFILES_NO_PROVISION" -}}
+: # cloud CLIs skipped (DOTFILES_NO_PROVISION set)
+{{ else -}}
+set -uo pipefail   # no -e: keep going if one installer fails
+
+SUDO=""
+if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null 2>&1; then SUDO="sudo"; fi
+
+{{ if eq .pkgManager "brew" -}}
+command -v aws    >/dev/null 2>&1 || brew install awscli                      || echo "warn: awscli install failed"
+command -v gcloud >/dev/null 2>&1 || brew install --cask google-cloud-sdk     || echo "warn: gcloud install failed"
+
+{{ else if eq .pkgManager "apt" -}}
+# AWS CLI v2 — official bundled installer
+if ! command -v aws >/dev/null 2>&1; then
+    echo "==> installing AWS CLI v2"
+    tmp="$(mktemp -d)"
+    if curl -fsSL "https://awscli.amazonaws.com/awscli-exe-linux-$(uname -m).zip" -o "$tmp/awscliv2.zip" \
+        && unzip -q "$tmp/awscliv2.zip" -d "$tmp"; then
+        $SUDO "$tmp/aws/install" --update || echo "warn: aws installer failed"
+    else
+        echo "warn: could not download AWS CLI v2"
+    fi
+    rm -rf "$tmp"
+fi
+
+# Google Cloud CLI — tarball into ~/.local, symlinked into ~/.local/bin (no root)
+if ! command -v gcloud >/dev/null 2>&1; then
+    echo "==> installing Google Cloud CLI"
+    gcarch="{{ if eq .arch "arm64" }}arm{{ else }}x86_64{{ end }}"
+    tmp="$(mktemp -d)"
+    if curl -fsSL "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-linux-${gcarch}.tar.gz" -o "$tmp/gcloud.tar.gz" \
+        && tar -xzf "$tmp/gcloud.tar.gz" -C "$HOME/.local"; then
+        "$HOME/.local/google-cloud-sdk/install.sh" --quiet --path-update false --usage-reporting false || echo "warn: gcloud install.sh failed"
+        for b in gcloud gsutil bq; do
+            ln -sf "$HOME/.local/google-cloud-sdk/bin/$b" "$HOME/.local/bin/$b"
+        done
+    else
+        echo "warn: could not download Google Cloud CLI"
+    fi
+    rm -rf "$tmp"
+fi
+{{ end -}}
+{{ end -}}

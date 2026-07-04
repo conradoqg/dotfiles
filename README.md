@@ -1,6 +1,6 @@
 # Dotfiles
 
-Gerenciado com [chezmoi](https://github.com/twpayne/chezmoi). Funciona em **Linux, WSL2 e macOS**, nas arquiteturas **x86_64 (amd64)** e **arm64** (inclui Apple Silicon).
+Managed with [chezmoi](https://github.com/twpayne/chezmoi). Works on **Linux, WSL2 and macOS**, on **x86_64 (amd64)** and **arm64** (including Apple Silicon).
 
 ## Installing
 
@@ -8,31 +8,32 @@ Gerenciado com [chezmoi](https://github.com/twpayne/chezmoi). Funciona em **Linu
 $ sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply conradoqg
 ```
 
-Isso instala o chezmoi, clona este repositório e aplica tudo: pacotes do sistema, binários, oh-my-zsh + plugins + tema, e os dotfiles.
+This installs chezmoi, clones this repository and applies everything: system packages, binaries, oh-my-zsh + plugins + theme, and the dotfiles.
 
-## Como funciona (arquitetura)
+## How it works (architecture)
 
-| Camada | Mecanismo | Arquivo |
+| Layer | Mechanism | File |
 |---|---|---|
-| Config por máquina (os/arch/pkgManager/isWSL) | template de config | `.chezmoi.toml.tmpl` |
-| Pacotes do gerenciador nativo (apt/brew) | script idempotente | `.chezmoiscripts/run_onchange_before_10-install-packages.sh.tmpl` |
-| Binários (Linux), plugins oh-my-zsh e tema p10k | externals declarativos | `.chezmoiexternal.toml.tmpl` |
-| Dotfiles (`.zshrc`, `.p10k.zsh`, configs) | arquivos versionados | `dot_*`, `private_dot_config/*` |
+| Per-machine config (os/arch/pkgManager/isWSL) | config template | `.chezmoi.toml.tmpl` |
+| Native package manager packages (apt/brew) | idempotent script | `.chezmoiscripts/run_onchange_before_10-install-packages.sh.tmpl` |
+| Docker, cloud CLIs and AI CLIs | idempotent installer scripts | `.chezmoiscripts/run_onchange_*` |
+| Binaries (Linux), oh-my-zsh plugins and the p10k theme | declarative externals | `.chezmoiexternal.toml.tmpl` |
+| Dotfiles (`.zshrc`, `.p10k.zsh`, `.gitconfig`, configs) | versioned files | `dot_*`, `private_dot_config/*` |
 
-No **Linux** os binários vêm de releases do GitHub (por OS/arch, com cache de 168h). No **macOS** tudo é instalado via **Homebrew**.
+On **Linux** the binaries come from GitHub releases (per OS/arch, cached for 168h). On **macOS** everything is installed via **Homebrew**.
 
-> Para evitar o rate limit da API do GitHub em CI, exporte `CHEZMOI_GITHUB_ACCESS_TOKEN`.
+> To avoid the GitHub API rate limit in CI, export `CHEZMOI_GITHUB_ACCESS_TOKEN`.
 
 ## Testing
 
-O harness em `test/` faz um *fresh install* completo em containers limpos:
+The harness under `test/` does a full *fresh install* in clean containers:
 
 ```console
 $ ./test/run-matrix.sh                 # linux/amd64 + linux/arm64
-$ ./test/run-matrix.sh linux/amd64     # só amd64
+$ ./test/run-matrix.sh linux/amd64     # amd64 only
 ```
 
-macOS não roda em Docker, então é testado no CI num runner `macos-14` (arm64) pelo caminho brew. Veja `.github/workflows/test.yml`.
+macOS cannot run in Docker, so it is tested in CI on a `macos-14` runner (arm64) through the brew path. See `.github/workflows/test.yml`.
 
 ## Links
 
@@ -62,56 +63,76 @@ macOS não roda em Docker, então é testado no CI num runner `macos-14` (arm64)
 
 ## Installed packages
 
-Origem: 📦 gerenciador nativo (apt no Linux / brew no macOS) · ⬢ release do GitHub (Linux; brew no macOS).
+Origin: 📦 native package manager (apt on Linux / brew on macOS) · ⬢ GitHub release (Linux; brew on macOS) · 🔧 official installer script (idempotent).
 
-### Shell & arquivos
+### Shell & files
 
-- ⬢ [eza](https://github.com/eza-community/eza) — `ls` moderno com ícones, cores e coluna git; substitui exa
-- 📦 [bat](https://github.com/sharkdp/bat) — `cat` com syntax highlighting, numeração e integração git (no Ubuntu o binário é `batcat`; há alias `bat`)
-- 📦 [fd-find](https://github.com/sharkdp/fd) — alternativa rápida e amigável ao `find` (no Ubuntu o binário é `fdfind`; há alias `fd`)
-- 📦 [tree](https://gitlab.com/OldManProgrammer/unix-tree) — lista o conteúdo de diretórios em árvore
-- ⬢ [broot](https://github.com/Canop/broot) — navegador de árvore de diretórios com busca fuzzy
-- ⬢ [walk](https://github.com/antonmedv/walk) — navegador de arquivos TUI rápido, com ícones
-- ⬢ [fzf](https://github.com/junegunn/fzf) — fuzzy finder de linha de comando (histórico, arquivos, etc.)
-- 📦 [most](https://www.jedsoft.org/most/) — paginador (tipo `less`) com cores e múltiplas janelas
+- ⬢ [eza](https://github.com/eza-community/eza) — modern `ls` with icons, colors and a git column; replaces exa
+- 📦 [bat](https://github.com/sharkdp/bat) — `cat` with syntax highlighting, line numbers and git integration (on Ubuntu the binary is `batcat`; aliased to `bat`)
+- 📦 [fd-find](https://github.com/sharkdp/fd) — fast, friendly alternative to `find` (on Ubuntu the binary is `fdfind`; aliased to `fd`)
+- ⬢ [ripgrep](https://github.com/BurntSushi/ripgrep) — extremely fast recursive text search (`rg`); respects `.gitignore`
+- 📦 [tree](https://gitlab.com/OldManProgrammer/unix-tree) — lists directory contents as a tree
+- ⬢ [broot](https://github.com/Canop/broot) — directory tree navigator with fuzzy search
+- ⬢ [walk](https://github.com/antonmedv/walk) — fast TUI file browser with icons
+- ⬢ [fzf](https://github.com/junegunn/fzf) — command-line fuzzy finder (history, files, etc.)
+- ⬢ [zoxide](https://github.com/ajeetdsouza/zoxide) — smarter `cd` that learns your most-used directories (provides `z`)
+- 📦 [most](https://www.jedsoft.org/most/) — pager (like `less`) with colors and multiple windows
 
 ### Git
 
-- ⬢ [gitui](https://github.com/gitui-org/gitui) — TUI de Git rápida e leve (stage/commit/diff/log) em Rust
-- ⬢ [lazygit](https://github.com/jesseduffield/lazygit) — TUI de Git completa, focada em produtividade
-- 📦 [git-extras](https://github.com/tj/git-extras) — coleção de utilitários git extras (`git summary`, `git ignore`, `git undo`…)
-- 📦 [gitflow](https://github.com/nvie/gitflow/wiki/Linux) — extensões de branching Git Flow (feature/release/hotfix)
+- ⬢ [gitui](https://github.com/gitui-org/gitui) — fast, lightweight Git TUI (stage/commit/diff/log) in Rust
+- ⬢ [lazygit](https://github.com/jesseduffield/lazygit) — full-featured, productivity-focused Git TUI
+- ⬢ [git-delta](https://github.com/dandavison/delta) — syntax-highlighting pager for git diffs (used by git and lazygit)
+- 📦 [git-extras](https://github.com/tj/git-extras) — collection of extra git utilities (`git summary`, `git ignore`, `git undo`…)
+- 📦 [gitflow](https://github.com/nvie/gitflow/wiki/Linux) — Git Flow branching extensions (feature/release/hotfix)
 
 ### Containers & Kubernetes
 
-- ⬢ [lazydocker](https://github.com/jesseduffield/lazydocker) — TUI para Docker/Compose (containers, logs, stats)
-- ⬢ [ctop](https://github.com/bcicen/ctop) — `top` para containers, com métricas em tempo real
-- ⬢ [k9s](https://github.com/derailed/k9s) — TUI para gerenciar e navegar clusters Kubernetes
+- ⬢ [lazydocker](https://github.com/jesseduffield/lazydocker) — TUI for Docker/Compose (containers, logs, stats)
+- ⬢ [ctop](https://github.com/bcicen/ctop) — `top` for containers, with real-time metrics
+- ⬢ [k9s](https://github.com/derailed/k9s) — TUI to manage and navigate Kubernetes clusters
+- ⬢ [kubectl](https://kubernetes.io/docs/reference/kubectl/) — the Kubernetes command-line client
+- 🔧 [docker-ce](https://docs.docker.com/engine/) — Docker Engine; installed only on native Linux (non-WSL); macOS/WSL use Docker Desktop
 
-### Sistema & disco
+### Cloud & IaC
 
-- 📦 [htop](https://htop.dev/) — monitor de processos interativo
-- 📦 [btop](https://github.com/aristocratos/btop) — monitor de recursos (CPU/mem/rede/disco/processos) em TUI; substitui bpytop/glances
-- 📦 [ncdu](https://dev.yorhel.nl/ncdu) — analisador interativo de uso de disco (`du` em ncurses)
-- ⬢ [duf](https://github.com/muesli/duf) — `df` moderno: uso de disco e partições em tabelas coloridas
-- ⬢ [dysk](https://github.com/Canop/dysk) — uso de disco e filesystems montados em tabela detalhada
+- ⬢ [terraform](https://github.com/hashicorp/terraform) — infrastructure as code (HashiCorp; BSL license)
+- 🔧 [aws-cli](https://aws.amazon.com/cli/) — AWS command-line interface (v2)
+- 🔧 [gcloud](https://cloud.google.com/sdk/gcloud) — Google Cloud CLI
 
-### Rede
+### System & disk
 
-- ⬢ [doggo](https://github.com/mr-karan/doggo) — cliente DNS amigável (um `dig` moderno); substitui dog
-- 📦 [mtr](https://www.bitwizard.nl/mtr/) — diagnóstico de rede combinando `ping` + `traceroute` (`mtr-tiny` no Linux)
-- ⬢ [cloudflare-speed-cli](https://github.com/kavehtehrani/cloudflare-speed-cli) — teste de velocidade de internet via rede da Cloudflare (TUI)
+- 📦 [htop](https://htop.dev/) — interactive process monitor
+- 📦 [btop](https://github.com/aristocratos/btop) — resource monitor (CPU/mem/net/disk/processes) TUI; replaces bpytop/glances
+- 📦 [ncdu](https://dev.yorhel.nl/ncdu) — interactive disk usage analyzer (`du` in ncurses)
+- ⬢ [duf](https://github.com/muesli/duf) — modern `df`: disk usage and partitions in colored tables
+- ⬢ [dysk](https://github.com/Canop/dysk) — disk usage and mounted filesystems in a detailed table
 
-### Dados (JSON/YAML)
+### Network
 
-- 📦 [jq](https://jqlang.github.io/jq/) — processador de JSON na linha de comando
-- ⬢ [yq](https://github.com/mikefarah/yq) — processador de YAML/JSON/XML (o "`jq` do YAML")
-- ⬢ [jnv](https://github.com/ynqa/jnv) — explorador interativo de JSON com filtros `jq` ao vivo
+- ⬢ [doggo](https://github.com/mr-karan/doggo) — friendly DNS client (a modern `dig`); replaces dog
+- 📦 [mtr](https://www.bitwizard.nl/mtr/) — network diagnostic combining `ping` + `traceroute` (`mtr-tiny` on Linux)
+- ⬢ [cloudflare-speed-cli](https://github.com/kavehtehrani/cloudflare-speed-cli) — internet speed test via Cloudflare's network (TUI)
+- ⬢ [miniserve](https://github.com/svenstaro/miniserve) — tiny HTTP file server with a browser upload UI
+- ⬢ [fortio](https://github.com/fortio/fortio) — HTTP/gRPC load testing tool with a web UI
 
-### Editor & ambiente
+### Data (JSON/YAML)
 
-- ⬢ [micro](https://github.com/micro-editor/micro) — editor de terminal moderno, com atalhos estilo GUI
-- 📦 [direnv](https://direnv.net/) — carrega/descarrega variáveis de ambiente por diretório (via `.envrc`)
+- 📦 [jq](https://jqlang.github.io/jq/) — command-line JSON processor
+- ⬢ [yq](https://github.com/mikefarah/yq) — YAML/JSON/XML processor (the "`jq` for YAML")
+- ⬢ [jnv](https://github.com/ynqa/jnv) — interactive JSON explorer with live `jq` filters
+
+### Editor & environment
+
+- ⬢ [micro](https://github.com/micro-editor/micro) — modern terminal editor with GUI-style shortcuts
+- 📦 [direnv](https://direnv.net/) — loads/unloads environment variables per directory (via `.envrc`)
+
+### AI coding
+
+- 🔧 [kiro-cli](https://kiro.dev/docs/cli/) — AI coding assistant in the terminal (successor of the Amazon Q CLI)
+- 🔧 [claude-code](https://docs.anthropic.com/en/docs/claude-code) — Anthropic's terminal-native agentic coding tool (`claude`)
+- 🔧 [codex](https://github.com/openai/codex) — OpenAI's local coding agent CLI
+- 🔧 [opencode](https://opencode.ai) — open-source AI coding agent for the terminal
 
 ## Shortcuts
 
@@ -122,12 +143,12 @@ Origem: 📦 gerenciador nativo (apt no Linux / brew no macOS) · ⬢ release do
 ## Aliases
 - `readme`: See this file
 - `ls`: `eza`
-- `bat`: `batcat` (só no Ubuntu)
-- `fd`: `fdfind` (só no Ubuntu)
+- `bat`: `batcat` (Ubuntu only)
+- `fd`: `fdfind` (Ubuntu only)
 - `m`: `micro`
 - `lg`: `lazygit`
 - `cm`: `chezmoi`
-- `walk`: navegador de arquivos com ícones
+- `walk`: file browser with icons
 - `mark`: bookmark directory
 
 ## Scripts

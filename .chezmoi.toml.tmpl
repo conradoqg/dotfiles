@@ -1,4 +1,4 @@
-{{/* Dados por máquina, derivados do ambiente. Sem prompts. */}}
+{{/* Per-machine data, derived from the environment. No prompts. */}}
 {{- $isWSL := false -}}
 {{- if hasKey .chezmoi.kernel "osrelease" -}}
 {{-   if or (contains "microsoft" (lower .chezmoi.kernel.osrelease)) (contains "wsl" (lower .chezmoi.kernel.osrelease)) -}}
@@ -22,8 +22,8 @@
     isWSL = {{ $isWSL }}
     pkgManager = {{ $pkgManager | quote }}
 
-# Cacheia respostas da API do GitHub (gitHubLatestReleaseAssetURL nos externals)
-# por 1 semana, evitando estourar o rate limit de 60 req/h em status/apply/verify.
-# Para CI/containers, exporte CHEZMOI_GITHUB_ACCESS_TOKEN para elevar o limite.
+# Cache GitHub API responses (gitHubLatestReleaseAssetURL in the externals)
+# for one week, to avoid hitting the 60 req/h rate limit on status/apply/verify.
+# For CI/containers, export CHEZMOI_GITHUB_ACCESS_TOKEN to raise the limit.
 [gitHub]
     refreshPeriod = "168h"

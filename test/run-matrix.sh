@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Roda o fresh-install harness para uma ou mais arquiteturas.
+# Run the fresh-install harness for one or more architectures.
 #   ./test/run-matrix.sh                 # amd64 + arm64
-#   ./test/run-matrix.sh linux/amd64     # só amd64
-# Defina CHEZMOI_GITHUB_ACCESS_TOKEN para evitar o rate limit da API do GitHub.
+#   ./test/run-matrix.sh linux/amd64     # amd64 only
+# Set CHEZMOI_GITHUB_ACCESS_TOKEN to avoid the GitHub API rate limit.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -11,7 +11,7 @@ token_arg=()
 [ -n "${CHEZMOI_GITHUB_ACCESS_TOKEN:-}" ] && \
     token_arg=(--build-arg "CHEZMOI_GITHUB_ACCESS_TOKEN=${CHEZMOI_GITHUB_ACCESS_TOKEN}")
 
-# Para arquiteturas não-nativas, registra o qemu binfmt uma vez (idempotente).
+# For non-native architectures, register qemu binfmt once (idempotent).
 host_arch="$(uname -m)"
 for plat in ${PLATFORMS//,/ }; do
     case "$plat" in
@@ -20,7 +20,7 @@ for plat in ${PLATFORMS//,/ }; do
         *) want="" ;;
     esac
     if [ -n "$want" ] && [ "$want" != "$host_arch" ]; then
-        echo "==> registrando emulação qemu para $plat"
+        echo "==> registering qemu emulation for $plat"
         docker run --privileged --rm tonistiigi/binfmt --install "${plat#linux/}" >/dev/null 2>&1 || true
     fi
 done
@@ -31,4 +31,4 @@ for plat in ${PLATFORMS//,/ }; do
         "${token_arg[@]}" \
         -t "dotfiles-test:${plat//\//-}" .
 done
-echo "==================== matriz OK ===================="
+echo "==================== matrix OK ===================="

@@ -1,12 +1,12 @@
-{{/* Externals declarativos: binários (Linux), plugins oh-my-zsh e tema p10k.
-     macOS instala os binários via brew (ver .chezmoiscripts). Aqui só Linux.
-     Arch: chezmoi expõe amd64/arm64. Ferramentas Rust usam x86_64/aarch64. */}}
+{{/* Declarative externals: binaries (Linux), oh-my-zsh plugins and the p10k theme.
+     macOS installs the binaries via brew (see .chezmoiscripts). Linux only here.
+     Arch: chezmoi exposes amd64/arm64. Rust tools use x86_64/aarch64. */}}
 {{- $rustArch := "x86_64" -}}
 {{- if eq .chezmoi.arch "arm64" }}{{ $rustArch = "aarch64" }}{{ end -}}
 {{- $microArch := "linux64" -}}
 {{- if eq .chezmoi.arch "arm64" }}{{ $microArch = "linux-arm64" }}{{ end -}}
 
-{{/* ===== oh-my-zsh + plugins + tema (HTTPS, substitui os antigos git@ SSH) ===== */}}
+{{/* ===== oh-my-zsh + plugins + theme (HTTPS, replaces the old git@ SSH) ===== */}}
 {{- if ne .chezmoi.os "windows" }}
 [".oh-my-zsh"]
     type = "archive"
@@ -51,10 +51,13 @@
     refreshPeriod = "168h"
 {{- end }}
 
-{{/* ===== binários (somente Linux; macOS via brew) ===== */}}
+{{/* ===== binaries (Linux only; macOS via brew) ===== */}}
 {{- if eq .chezmoi.os "linux" }}
+{{- $k8sTag := (gitHubLatestRelease "kubernetes/kubernetes").TagName -}}
+{{- $tfVer := trimPrefix "v" (gitHubLatestRelease "hashicorp/terraform").TagName -}}
+{{- $rgTriple := (eq .chezmoi.arch "arm64" | ternary "aarch64-unknown-linux-gnu" "x86_64-unknown-linux-musl") -}}
 
-# eza (substitui exa 🪦) — nome de asset sem versão
+# eza (replaces exa 🪦) — versionless asset name
 [".local/bin/eza"]
     type = "archive-file"
     url = "https://github.com/eza-community/eza/releases/latest/download/eza_{{ $rustArch }}-unknown-linux-gnu.tar.gz"
@@ -62,7 +65,7 @@
     executable = true
     refreshPeriod = "168h"
 
-# doggo (substitui dog 🪦) — sem versão no nome
+# doggo (replaces dog 🪦) — versionless name
 [".local/bin/doggo"]
     type = "archive-file"
     url = "https://github.com/mr-karan/doggo/releases/latest/download/doggo-linux-{{ $rustArch }}.tar.gz"
@@ -70,7 +73,7 @@
     executable = true
     refreshPeriod = "168h"
 
-# gitui — sem versão no nome
+# gitui — versionless name
 [".local/bin/gitui"]
     type = "archive-file"
     url = "https://github.com/gitui-org/gitui/releases/latest/download/gitui-linux-{{ $rustArch }}.tar.gz"
@@ -78,7 +81,7 @@
     executable = true
     refreshPeriod = "168h"
 
-# k9s — sem versão no nome
+# k9s — versionless name
 [".local/bin/k9s"]
     type = "archive-file"
     url = "https://github.com/derailed/k9s/releases/latest/download/k9s_Linux_{{ .chezmoi.arch }}.tar.gz"
@@ -86,21 +89,21 @@
     executable = true
     refreshPeriod = "168h"
 
-# yq (renomeia para 'yq' — antes era yq_linux_amd64) — binário direto
+# yq (renamed to 'yq' — was yq_linux_amd64) — raw binary
 [".local/bin/yq"]
     type = "file"
     url = "https://github.com/mikefarah/yq/releases/latest/download/yq_linux_{{ .chezmoi.arch }}"
     executable = true
     refreshPeriod = "168h"
 
-# walk (adotado) — binário direto
+# walk (adopted) — raw binary
 [".local/bin/walk"]
     type = "file"
     url = "https://github.com/antonmedv/walk/releases/latest/download/walk_linux_{{ .chezmoi.arch }}"
     executable = true
     refreshPeriod = "168h"
 
-# jnv (adotado) — cargo-dist, binário em <stem>/jnv
+# jnv (adopted) — cargo-dist, binary at <stem>/jnv
 [".local/bin/jnv"]
     type = "archive-file"
     url = "https://github.com/ynqa/jnv/releases/latest/download/jnv-{{ $rustArch }}-unknown-linux-gnu.tar.xz"
@@ -108,7 +111,7 @@
     executable = true
     refreshPeriod = "168h"
 
-# cloudflare-speed-cli (adotado) — cargo-dist musl
+# cloudflare-speed-cli (adopted) — cargo-dist musl
 [".local/bin/cloudflare-speed-cli"]
     type = "archive-file"
     url = "https://github.com/kavehtehrani/cloudflare-speed-cli/releases/latest/download/cloudflare-speed-cli-{{ $rustArch }}-unknown-linux-musl.tar.xz"
@@ -116,7 +119,7 @@
     executable = true
     refreshPeriod = "168h"
 
-# lazygit — versão no nome do asset → gitHubLatestReleaseAssetURL
+# lazygit — version in the asset name → gitHubLatestReleaseAssetURL
 [".local/bin/lazygit"]
     type = "archive-file"
     url = {{ gitHubLatestReleaseAssetURL "jesseduffield/lazygit" (printf "lazygit_*_linux_%s.tar.gz" (eq .chezmoi.arch "arm64" | ternary "arm64" "x86_64")) | quote }}
@@ -124,7 +127,7 @@
     executable = true
     refreshPeriod = "168h"
 
-# lazydocker — mesmo padrão (goreleaser), versão no nome
+# lazydocker — same pattern (goreleaser), version in the name
 [".local/bin/lazydocker"]
     type = "archive-file"
     url = {{ gitHubLatestReleaseAssetURL "jesseduffield/lazydocker" (printf "lazydocker_*_Linux_%s.tar.gz" (eq .chezmoi.arch "arm64" | ternary "arm64" "x86_64")) | quote }}
@@ -132,7 +135,7 @@
     executable = true
     refreshPeriod = "168h"
 
-# duf — versão no nome
+# duf — version in the name
 [".local/bin/duf"]
     type = "archive-file"
     url = {{ gitHubLatestReleaseAssetURL "muesli/duf" (printf "duf_*_linux_%s.tar.gz" (eq .chezmoi.arch "arm64" | ternary "arm64" "x86_64")) | quote }}
@@ -140,14 +143,14 @@
     executable = true
     refreshPeriod = "168h"
 
-# ctop — versão no nome, binário direto (archive-file não; é 'file' via asset URL)
+# ctop — version in the name, raw binary ('file' via asset URL)
 [".local/bin/ctop"]
     type = "file"
     url = {{ gitHubLatestReleaseAssetURL "bcicen/ctop" (printf "ctop-*-linux-%s" .chezmoi.arch) | quote }}
     executable = true
     refreshPeriod = "168h"
 
-# fzf — versão no nome
+# fzf — version in the name
 [".local/bin/fzf"]
     type = "archive-file"
     url = {{ gitHubLatestReleaseAssetURL "junegunn/fzf" (printf "fzf-*-linux_%s.tar.gz" .chezmoi.arch) | quote }}
@@ -155,7 +158,7 @@
     executable = true
     refreshPeriod = "168h"
 
-# micro — versão no nome + binário em micro-<ver>/micro
+# micro — version in the name + binary at micro-<ver>/micro
 [".local/bin/micro"]
     type = "archive-file"
     url = {{ gitHubLatestReleaseAssetURL "zyedidia/micro" (printf "micro-*-%s.tar.gz" $microArch) | quote }}
@@ -164,7 +167,7 @@
     executable = true
     refreshPeriod = "168h"
 
-# broot — zip Canop, binário em <triple>/broot
+# broot — Canop zip, binary at <triple>/broot
 [".local/bin/broot"]
     type = "archive-file"
     url = {{ gitHubLatestReleaseAssetURL "Canop/broot" "broot_*.zip" | quote }}
@@ -172,11 +175,67 @@
     executable = true
     refreshPeriod = "168h"
 
-# dysk (adotado) — zip Canop, binário em build/<triple>/dysk
+# dysk (adopted) — Canop zip, binary at build/<triple>/dysk
 [".local/bin/dysk"]
     type = "archive-file"
     url = {{ gitHubLatestReleaseAssetURL "Canop/dysk" "dysk_*.zip" | quote }}
     path = "build/{{ $rustArch }}-unknown-linux-gnu/dysk"
+    executable = true
+    refreshPeriod = "168h"
+
+# ripgrep — libc differs per arch (musl on amd64, gnu on arm64)
+[".local/bin/rg"]
+    type = "archive-file"
+    url = {{ gitHubLatestReleaseAssetURL "BurntSushi/ripgrep" (printf "ripgrep-*-%s.tar.gz" $rgTriple) | quote }}
+    path = "rg"
+    stripComponents = 1
+    executable = true
+    refreshPeriod = "168h"
+
+# zoxide — musl, binary at archive root
+[".local/bin/zoxide"]
+    type = "archive-file"
+    url = {{ gitHubLatestReleaseAssetURL "ajeetdsouza/zoxide" (printf "zoxide-*-%s-unknown-linux-musl.tar.gz" $rustArch) | quote }}
+    path = "zoxide"
+    executable = true
+    refreshPeriod = "168h"
+
+# git-delta — gnu, binary in delta-<ver>-<triple>/delta
+[".local/bin/delta"]
+    type = "archive-file"
+    url = {{ gitHubLatestReleaseAssetURL "dandavison/delta" (printf "delta-*-%s-unknown-linux-gnu.tar.gz" $rustArch) | quote }}
+    path = "delta"
+    stripComponents = 1
+    executable = true
+    refreshPeriod = "168h"
+
+# miniserve — raw binary (adopted; has a browser upload UI)
+[".local/bin/miniserve"]
+    type = "file"
+    url = {{ gitHubLatestReleaseAssetURL "svenstaro/miniserve" (printf "miniserve-*-%s-unknown-linux-gnu" $rustArch) | quote }}
+    executable = true
+    refreshPeriod = "168h"
+
+# fortio — HTTP/gRPC load testing; binary in usr/bin/fortio
+[".local/bin/fortio"]
+    type = "archive-file"
+    url = {{ gitHubLatestReleaseAssetURL "fortio/fortio" (printf "fortio-linux_%s-*.tgz" .chezmoi.arch) | quote }}
+    path = "usr/bin/fortio"
+    executable = true
+    refreshPeriod = "168h"
+
+# kubectl — official binary from dl.k8s.io (stable tag via GitHub)
+[".local/bin/kubectl"]
+    type = "file"
+    url = "https://dl.k8s.io/release/{{ $k8sTag }}/bin/linux/{{ .chezmoi.arch }}/kubectl"
+    executable = true
+    refreshPeriod = "168h"
+
+# terraform — HashiCorp zip (BSL license); version via GitHub tag
+[".local/bin/terraform"]
+    type = "archive-file"
+    url = "https://releases.hashicorp.com/terraform/{{ $tfVer }}/terraform_{{ $tfVer }}_linux_{{ .chezmoi.arch }}.zip"
+    path = "terraform"
     executable = true
     refreshPeriod = "168h"
 {{- end }}

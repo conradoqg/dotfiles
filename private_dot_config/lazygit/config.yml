@@ -4,3 +4,7 @@ gui:
       - reverse
     selectedRangeBgColor:
       - reverse
+git:
+  paging:
+    colorArg: always
+    pager: delta --paging=never

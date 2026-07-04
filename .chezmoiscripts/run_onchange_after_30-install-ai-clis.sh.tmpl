@@ -1,0 +1,42 @@
+#!/bin/bash
+# Installs AI coding CLIs via their official installers.
+# Idempotent (guards on `command -v`) and non-fatal (a failing installer warns).
+# These tools self-update, so they are bootstrapped here rather than pinned.
+#
+#   os         = {{ .os }}
+#   pkgManager = {{ .pkgManager }}
+{{ if env "DOTFILES_NO_PROVISION" -}}
+: # AI CLIs skipped (DOTFILES_NO_PROVISION set)
+{{ else -}}
+set -uo pipefail   # no -e: keep going if one installer fails
+
+# kiro-cli — successor of the Amazon Q CLI
+if ! command -v kiro-cli >/dev/null 2>&1; then
+    echo "==> installing kiro-cli"
+    curl -fsSL https://cli.kiro.dev/install | bash || echo "warn: kiro-cli install failed"
+fi
+
+# claude-code (command: claude)
+if ! command -v claude >/dev/null 2>&1; then
+    echo "==> installing claude-code"
+    curl -fsSL https://claude.ai/install.sh | bash || echo "warn: claude-code install failed"
+fi
+
+# opencode
+if ! command -v opencode >/dev/null 2>&1; then
+    echo "==> installing opencode"
+    curl -fsSL https://opencode.ai/install | bash || echo "warn: opencode install failed"
+fi
+
+# codex — scoped npm package (@openai/codex); brew on macOS as fallback
+if ! command -v codex >/dev/null 2>&1; then
+    echo "==> installing codex"
+    if command -v npm >/dev/null 2>&1; then
+        npm install -g @openai/codex || echo "warn: codex (npm) install failed"
+    elif command -v brew >/dev/null 2>&1; then
+        brew install codex || echo "warn: codex (brew) install failed"
+    else
+        echo "warn: codex needs npm or brew; skipping"
+    fi
+fi
+{{ end -}}

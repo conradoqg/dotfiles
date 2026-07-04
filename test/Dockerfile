@@ -1,39 +1,44 @@
-# Fresh-install harness dos dotfiles (Linux). Uso:
-#   docker build -f test/Dockerfile -t dotfiles-test .        # amd64 nativo
-#   docker buildx build --platform linux/arm64 -f test/Dockerfile .   # arm64
+# Dotfiles fresh-install harness (Linux). Usage:
+#   docker build -f test/Dockerfile -t dotfiles-test .                # native amd64
+#   docker build --platform linux/arm64 -f test/Dockerfile .          # arm64 (needs qemu)
 #
-# O build inteiro é o teste: se qualquer etapa falhar, o build falha.
+# The whole build IS the test: if any step fails, the build fails.
 FROM ubuntu:24.04
 
 ARG DEBIAN_FRONTEND=noninteractive
-# Ferramentas mínimas de um sistema "cru" + o que o instalador do chezmoi precisa.
+# Minimal tools of a bare system + what the chezmoi installer needs.
 RUN apt-get update && \
     apt-get install -y --no-install-recommends curl git sudo ca-certificates locales && \
     rm -rf /var/lib/apt/lists/*
 
-# Usuário não-root com sudo sem senha (simula uma máquina real; run_onchange usa sudo).
+# Non-root user with passwordless sudo (simulates a real machine; run_onchange uses sudo).
 RUN useradd -m -s /bin/bash tester && \
     echo "tester ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/tester && \
     chmod 0440 /etc/sudoers.d/tester
 USER tester
 WORKDIR /home/tester
 
-# Working tree atual dos dotfiles como source do chezmoi.
+# Current dotfiles working tree as the chezmoi source.
 COPY --chown=tester:tester . /home/tester/.local/share/chezmoi
 
-# Token opcional do GitHub para elevar o rate limit da API (externals versionados).
+# Optional GitHub token to raise the API rate limit (versioned externals).
 ARG CHEZMOI_GITHUB_ACCESS_TOKEN=""
 ENV CHEZMOI_GITHUB_ACCESS_TOKEN=${CHEZMOI_GITHUB_ACCESS_TOKEN}
 ENV PATH="/home/tester/.local/bin:/home/tester/bin:${PATH}"
+# Skip heavy/network provisioners (docker-ce, cloud CLIs, AI CLIs) in the harness;
+# they are validated on real machines. Core externals + apt are still exercised.
+ENV DOTFILES_NO_PROVISION=1
 
-# 1) Instala chezmoi e aplica (usa o source já presente em ~/.local/share/chezmoi).
+# 1) Install chezmoi and apply (uses the source already at ~/.local/share/chezmoi).
 RUN sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply
 
-# 2) Valida que os binários esperados foram instalados e executam.
+# 2) Validate that the expected binaries were installed and run.
 RUN set -e; \
-    echo "== validando binários =="; \
-    for b in eza doggo gitui lazygit lazydocker duf yq ctop k9s micro broot fzf walk dysk jnv cloudflare-speed-cli btop; do \
-        command -v "$b" >/dev/null 2>&1 || { echo "FALTOU: $b"; exit 1; }; \
+    echo "== validating binaries =="; \
+    for b in eza doggo gitui lazygit lazydocker duf yq ctop k9s micro broot fzf \
+             walk dysk jnv cloudflare-speed-cli btop \
+             rg zoxide delta miniserve fortio kubectl terraform; do \
+        command -v "$b" >/dev/null 2>&1 || { echo "MISSING: $b"; exit 1; }; \
     done; \
     eza --version >/dev/null; \
     btop --version >/dev/null; \
@@ -43,15 +48,15 @@ RUN set -e; \
     test ! -e "$HOME/.local/bin/exa" && test ! -e "$HOME/.local/bin/dog"; \
     echo "== chezmoi verify =="; \
     chezmoi verify --exclude=scripts; \
-    echo "OK: fresh install validado"
+    echo "OK: fresh install validated"
 
-# 3) Idempotência: segundo apply não deve reinstalar pacotes (run_onchange no-op).
+# 3) Idempotency: a second apply must not reinstall packages (run_onchange no-op).
 RUN set -e; \
     out="$(chezmoi apply 2>&1)"; \
     echo "$out"; \
-    if echo "$out" | grep -qi "apt: instalando"; then \
-        echo "FALHA: run_onchange reexecutou apt no 2º apply (não idempotente)"; exit 1; \
+    if echo "$out" | grep -qi "apt: installing"; then \
+        echo "FAIL: run_onchange re-ran apt on the 2nd apply (not idempotent)"; exit 1; \
     fi; \
-    echo "OK: idempotente"
+    echo "OK: idempotent"
 
 CMD ["/bin/zsh"]
