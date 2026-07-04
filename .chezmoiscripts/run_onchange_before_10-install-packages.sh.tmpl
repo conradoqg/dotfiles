@@ -1,0 +1,60 @@
+#!/bin/bash
+# Instala pacotes do gerenciador nativo. Re-executa automaticamente quando a
+# lista abaixo muda (o conteúdo renderizado faz parte do hash do run_onchange).
+#
+#   os         = {{ .os }}
+#   arch       = {{ .arch }}
+#   pkgManager = {{ .pkgManager }}
+#
+# No Linux, os binários modernos (eza, lazygit, ...) vêm de .chezmoiexternal.toml;
+# aqui só o que o gerenciador nativo cobre. No macOS o brew cobre tudo.
+set -euo pipefail
+
+SUDO=""
+if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null 2>&1; then
+    SUDO="sudo"
+fi
+
+{{ if eq .pkgManager "apt" -}}
+export DEBIAN_FRONTEND=noninteractive
+PACKAGES=(
+    wget git zsh vim tree most ncdu htop
+    git-extras git-flow direnv zip unzip mtr-tiny
+    jq
+    bat fd-find
+    btop
+)
+echo "==> apt: atualizando índice"
+$SUDO apt-get update -qq
+echo "==> apt: instalando ${#PACKAGES[@]} pacotes"
+$SUDO apt-get install -y --no-install-recommends "${PACKAGES[@]}"
+
+{{ else if eq .pkgManager "brew" -}}
+# macOS (e Linuxbrew): brew cobre base + binários modernos, já que os externals
+# de binário são só para Linux.
+PACKAGES=(
+    git zsh
+    eza doggo gitui lazygit lazydocker duf yq ctop k9s micro broot fzf
+    walk dysk jnv
+    btop bat fd
+    tree ncdu htop mtr jq direnv git-extras git-flow
+)
+echo "==> brew: instalando ${#PACKAGES[@]} fórmulas"
+brew install "${PACKAGES[@]}" || true
+
+{{ else -}}
+echo "AVISO: pkgManager '{{ .pkgManager }}' não suportado neste OS ({{ .os }})." >&2
+echo "       Instale manualmente: zsh, git, btop, bat, fd, e um editor." >&2
+{{ end -}}
+
+# zsh como shell padrão (idempotente; ignora falha em ambientes sem chsh/PAM)
+if command -v zsh >/dev/null 2>&1; then
+    zsh_path="$(command -v zsh)"
+    current_shell="$(getent passwd "$(id -un)" 2>/dev/null | cut -d: -f7 || echo "")"
+    if [ "$current_shell" != "$zsh_path" ]; then
+        echo "==> definindo zsh como shell padrão"
+        $SUDO chsh -s "$zsh_path" "$(id -un)" 2>/dev/null \
+            || chsh -s "$zsh_path" 2>/dev/null \
+            || echo "   (não foi possível alterar o shell automaticamente; ignore em container)"
+    fi
+fi

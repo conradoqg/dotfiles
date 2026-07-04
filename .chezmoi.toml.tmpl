@@ -1,0 +1,29 @@
+{{/* Dados por máquina, derivados do ambiente. Sem prompts. */}}
+{{- $isWSL := false -}}
+{{- if hasKey .chezmoi.kernel "osrelease" -}}
+{{-   if or (contains "microsoft" (lower .chezmoi.kernel.osrelease)) (contains "wsl" (lower .chezmoi.kernel.osrelease)) -}}
+{{-     $isWSL = true -}}
+{{-   end -}}
+{{- end -}}
+{{- $pkgManager := "unsupported" -}}
+{{- if eq .chezmoi.os "darwin" -}}
+{{-   $pkgManager = "brew" -}}
+{{- else if eq .chezmoi.os "linux" -}}
+{{-   if lookPath "apt-get" -}}
+{{-     $pkgManager = "apt" -}}
+{{-   else if lookPath "brew" -}}
+{{-     $pkgManager = "brew" -}}
+{{-   end -}}
+{{- end -}}
+
+[data]
+    os = {{ .chezmoi.os | quote }}
+    arch = {{ .chezmoi.arch | quote }}
+    isWSL = {{ $isWSL }}
+    pkgManager = {{ $pkgManager | quote }}
+
+# Cacheia respostas da API do GitHub (gitHubLatestReleaseAssetURL nos externals)
+# por 1 semana, evitando estourar o rate limit de 60 req/h em status/apply/verify.
+# Para CI/containers, exporte CHEZMOI_GITHUB_ACCESS_TOKEN para elevar o limite.
+[gitHub]
+    refreshPeriod = "168h"

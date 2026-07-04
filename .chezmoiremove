@@ -1,0 +1,3 @@
+{{/* Alvos a remover de todas as máquinas (configs de ferramentas descontinuadas). */}}
+.config/colorls
+.config/bpytop

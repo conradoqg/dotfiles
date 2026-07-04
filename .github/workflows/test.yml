@@ -1,0 +1,45 @@
+name: test-dotfiles
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  linux:
+    name: fresh-install ${{ matrix.platform }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [linux/amd64, linux/arm64]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+      - name: Build & test (${{ matrix.platform }})
+        run: |
+          docker buildx build --platform ${{ matrix.platform }} \
+            -f test/Dockerfile \
+            --build-arg CHEZMOI_GITHUB_ACCESS_TOKEN=${{ secrets.GITHUB_TOKEN }} \
+            --progress plain .
+
+  # Docker não roda macOS (kernel/licença Apple), então testamos o caminho brew
+  # num runner macOS real (macos-14 = Apple Silicon / arm64).
+  macos:
+    name: fresh-install macOS (arm64, brew)
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - name: chezmoi init --apply
+        env:
+          CHEZMOI_GITHUB_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply --source "$PWD"
+      - name: Validar binários (brew)
+        run: |
+          set -e
+          export PATH="/opt/homebrew/bin:$HOME/.local/bin:$PATH"
+          for b in eza doggo gitui lazygit duf yq ctop k9s micro broot fzf walk dysk jnv btop bat fd; do
+            command -v "$b" >/dev/null || { echo "FALTOU: $b"; exit 1; }
+          done
+          "$HOME/bin/chezmoi" verify --exclude=scripts || chezmoi verify --exclude=scripts

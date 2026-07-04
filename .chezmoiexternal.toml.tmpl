@@ -1,0 +1,182 @@
+{{/* Externals declarativos: binários (Linux), plugins oh-my-zsh e tema p10k.
+     macOS instala os binários via brew (ver .chezmoiscripts). Aqui só Linux.
+     Arch: chezmoi expõe amd64/arm64. Ferramentas Rust usam x86_64/aarch64. */}}
+{{- $rustArch := "x86_64" -}}
+{{- if eq .chezmoi.arch "arm64" }}{{ $rustArch = "aarch64" }}{{ end -}}
+{{- $microArch := "linux64" -}}
+{{- if eq .chezmoi.arch "arm64" }}{{ $microArch = "linux-arm64" }}{{ end -}}
+
+{{/* ===== oh-my-zsh + plugins + tema (HTTPS, substitui os antigos git@ SSH) ===== */}}
+{{- if ne .chezmoi.os "windows" }}
+[".oh-my-zsh"]
+    type = "archive"
+    url = "https://github.com/ohmyzsh/ohmyzsh/archive/master.tar.gz"
+    exact = false
+    stripComponents = 1
+    refreshPeriod = "168h"
+
+[".oh-my-zsh-custom/plugins/zsh-autosuggestions"]
+    type = "archive"
+    url = "https://github.com/zsh-users/zsh-autosuggestions/archive/master.tar.gz"
+    exact = false
+    stripComponents = 1
+    refreshPeriod = "168h"
+
+[".oh-my-zsh-custom/plugins/fast-syntax-highlighting"]
+    type = "archive"
+    url = "https://github.com/zdharma-continuum/fast-syntax-highlighting/archive/master.tar.gz"
+    exact = false
+    stripComponents = 1
+    refreshPeriod = "168h"
+
+[".oh-my-zsh-custom/plugins/fzf-tab"]
+    type = "archive"
+    url = "https://github.com/Aloxaf/fzf-tab/archive/master.tar.gz"
+    exact = false
+    stripComponents = 1
+    refreshPeriod = "168h"
+
+[".oh-my-zsh-custom/plugins/you-should-use"]
+    type = "archive"
+    url = "https://github.com/MichaelAquilina/zsh-you-should-use/archive/master.tar.gz"
+    exact = false
+    stripComponents = 1
+    refreshPeriod = "168h"
+
+[".oh-my-zsh-custom/themes/powerlevel10k"]
+    type = "archive"
+    url = "https://github.com/romkatv/powerlevel10k/archive/master.tar.gz"
+    exact = false
+    stripComponents = 1
+    refreshPeriod = "168h"
+{{- end }}
+
+{{/* ===== binários (somente Linux; macOS via brew) ===== */}}
+{{- if eq .chezmoi.os "linux" }}
+
+# eza (substitui exa 🪦) — nome de asset sem versão
+[".local/bin/eza"]
+    type = "archive-file"
+    url = "https://github.com/eza-community/eza/releases/latest/download/eza_{{ $rustArch }}-unknown-linux-gnu.tar.gz"
+    path = "./eza"
+    executable = true
+    refreshPeriod = "168h"
+
+# doggo (substitui dog 🪦) — sem versão no nome
+[".local/bin/doggo"]
+    type = "archive-file"
+    url = "https://github.com/mr-karan/doggo/releases/latest/download/doggo-linux-{{ $rustArch }}.tar.gz"
+    path = "doggo"
+    executable = true
+    refreshPeriod = "168h"
+
+# gitui — sem versão no nome
+[".local/bin/gitui"]
+    type = "archive-file"
+    url = "https://github.com/gitui-org/gitui/releases/latest/download/gitui-linux-{{ $rustArch }}.tar.gz"
+    path = "./gitui"
+    executable = true
+    refreshPeriod = "168h"
+
+# k9s — sem versão no nome
+[".local/bin/k9s"]
+    type = "archive-file"
+    url = "https://github.com/derailed/k9s/releases/latest/download/k9s_Linux_{{ .chezmoi.arch }}.tar.gz"
+    path = "k9s"
+    executable = true
+    refreshPeriod = "168h"
+
+# yq (renomeia para 'yq' — antes era yq_linux_amd64) — binário direto
+[".local/bin/yq"]
+    type = "file"
+    url = "https://github.com/mikefarah/yq/releases/latest/download/yq_linux_{{ .chezmoi.arch }}"
+    executable = true
+    refreshPeriod = "168h"
+
+# walk (adotado) — binário direto
+[".local/bin/walk"]
+    type = "file"
+    url = "https://github.com/antonmedv/walk/releases/latest/download/walk_linux_{{ .chezmoi.arch }}"
+    executable = true
+    refreshPeriod = "168h"
+
+# jnv (adotado) — cargo-dist, binário em <stem>/jnv
+[".local/bin/jnv"]
+    type = "archive-file"
+    url = "https://github.com/ynqa/jnv/releases/latest/download/jnv-{{ $rustArch }}-unknown-linux-gnu.tar.xz"
+    path = "jnv-{{ $rustArch }}-unknown-linux-gnu/jnv"
+    executable = true
+    refreshPeriod = "168h"
+
+# cloudflare-speed-cli (adotado) — cargo-dist musl
+[".local/bin/cloudflare-speed-cli"]
+    type = "archive-file"
+    url = "https://github.com/kavehtehrani/cloudflare-speed-cli/releases/latest/download/cloudflare-speed-cli-{{ $rustArch }}-unknown-linux-musl.tar.xz"
+    path = "cloudflare-speed-cli-{{ $rustArch }}-unknown-linux-musl/cloudflare-speed-cli"
+    executable = true
+    refreshPeriod = "168h"
+
+# lazygit — versão no nome do asset → gitHubLatestReleaseAssetURL
+[".local/bin/lazygit"]
+    type = "archive-file"
+    url = {{ gitHubLatestReleaseAssetURL "jesseduffield/lazygit" (printf "lazygit_*_linux_%s.tar.gz" (eq .chezmoi.arch "arm64" | ternary "arm64" "x86_64")) | quote }}
+    path = "lazygit"
+    executable = true
+    refreshPeriod = "168h"
+
+# lazydocker — mesmo padrão (goreleaser), versão no nome
+[".local/bin/lazydocker"]
+    type = "archive-file"
+    url = {{ gitHubLatestReleaseAssetURL "jesseduffield/lazydocker" (printf "lazydocker_*_Linux_%s.tar.gz" (eq .chezmoi.arch "arm64" | ternary "arm64" "x86_64")) | quote }}
+    path = "lazydocker"
+    executable = true
+    refreshPeriod = "168h"
+
+# duf — versão no nome
+[".local/bin/duf"]
+    type = "archive-file"
+    url = {{ gitHubLatestReleaseAssetURL "muesli/duf" (printf "duf_*_linux_%s.tar.gz" (eq .chezmoi.arch "arm64" | ternary "arm64" "x86_64")) | quote }}
+    path = "duf"
+    executable = true
+    refreshPeriod = "168h"
+
+# ctop — versão no nome, binário direto (archive-file não; é 'file' via asset URL)
+[".local/bin/ctop"]
+    type = "file"
+    url = {{ gitHubLatestReleaseAssetURL "bcicen/ctop" (printf "ctop-*-linux-%s" .chezmoi.arch) | quote }}
+    executable = true
+    refreshPeriod = "168h"
+
+# fzf — versão no nome
+[".local/bin/fzf"]
+    type = "archive-file"
+    url = {{ gitHubLatestReleaseAssetURL "junegunn/fzf" (printf "fzf-*-linux_%s.tar.gz" .chezmoi.arch) | quote }}
+    path = "fzf"
+    executable = true
+    refreshPeriod = "168h"
+
+# micro — versão no nome + binário em micro-<ver>/micro
+[".local/bin/micro"]
+    type = "archive-file"
+    url = {{ gitHubLatestReleaseAssetURL "zyedidia/micro" (printf "micro-*-%s.tar.gz" $microArch) | quote }}
+    path = "micro"
+    stripComponents = 1
+    executable = true
+    refreshPeriod = "168h"
+
+# broot — zip Canop, binário em <triple>/broot
+[".local/bin/broot"]
+    type = "archive-file"
+    url = {{ gitHubLatestReleaseAssetURL "Canop/broot" "broot_*.zip" | quote }}
+    path = "{{ $rustArch }}-unknown-linux-gnu/broot"
+    executable = true
+    refreshPeriod = "168h"
+
+# dysk (adotado) — zip Canop, binário em build/<triple>/dysk
+[".local/bin/dysk"]
+    type = "archive-file"
+    url = {{ gitHubLatestReleaseAssetURL "Canop/dysk" "dysk_*.zip" | quote }}
+    path = "build/{{ $rustArch }}-unknown-linux-gnu/dysk"
+    executable = true
+    refreshPeriod = "168h"
+{{- end }}

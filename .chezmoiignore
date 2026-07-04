@@ -1,0 +1,3 @@
+{{/* Arquivos do repo que NÃO devem ser aplicados em $HOME.
+     (.github, .git e .chezmoi* já são ignorados por começarem com ponto.) */}}
+test
