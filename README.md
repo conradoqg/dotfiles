@@ -62,39 +62,56 @@ macOS não roda em Docker, então é testado no CI num runner `macos-14` (arm64)
 
 ## Installed packages
 
-### Via gerenciador nativo (apt no Linux / brew no macOS)
+Origem: 📦 gerenciador nativo (apt no Linux / brew no macOS) · ⬢ release do GitHub (Linux; brew no macOS).
 
-- [most](https://www.jedsoft.org/most/) — paginador (tipo `less`) com cores e múltiplas janelas
-- [tree](https://gitlab.com/OldManProgrammer/unix-tree) — lista o conteúdo de diretórios em árvore
-- [ncdu](https://dev.yorhel.nl/ncdu) — analisador interativo de uso de disco (`du` em ncurses)
-- [htop](https://htop.dev/) — monitor de processos interativo
-- [jq](https://jqlang.github.io/jq/) — processador de JSON na linha de comando
-- [bat](https://github.com/sharkdp/bat) — `cat` com syntax highlighting, numeração e integração git (no Ubuntu o binário é `batcat`; há alias `bat`)
-- [fd-find](https://github.com/sharkdp/fd) — alternativa rápida e amigável ao `find` (no Ubuntu o binário é `fdfind`; há alias `fd`)
-- [git-extras](https://github.com/tj/git-extras) — coleção de utilitários git extras (`git summary`, `git ignore`, `git undo`…)
-- [gitflow](https://github.com/nvie/gitflow/wiki/Linux) — extensões de branching Git Flow (feature/release/hotfix)
-- [direnv](https://direnv.net/) — carrega/descarrega variáveis de ambiente por diretório (via `.envrc`)
-- [btop](https://github.com/aristocratos/btop) — monitor de recursos (CPU/mem/rede/disco/processos) em TUI; substitui bpytop/glances
-- [mtr](https://www.bitwizard.nl/mtr/) — diagnóstico de rede combinando `ping` + `traceroute` (`mtr-tiny` no Linux)
+### Shell & arquivos
 
-### Via releases do GitHub (Linux) / brew (macOS)
+- ⬢ [eza](https://github.com/eza-community/eza) — `ls` moderno com ícones, cores e coluna git; substitui exa
+- 📦 [bat](https://github.com/sharkdp/bat) — `cat` com syntax highlighting, numeração e integração git (no Ubuntu o binário é `batcat`; há alias `bat`)
+- 📦 [fd-find](https://github.com/sharkdp/fd) — alternativa rápida e amigável ao `find` (no Ubuntu o binário é `fdfind`; há alias `fd`)
+- 📦 [tree](https://gitlab.com/OldManProgrammer/unix-tree) — lista o conteúdo de diretórios em árvore
+- ⬢ [broot](https://github.com/Canop/broot) — navegador de árvore de diretórios com busca fuzzy
+- ⬢ [walk](https://github.com/antonmedv/walk) — navegador de arquivos TUI rápido, com ícones
+- ⬢ [fzf](https://github.com/junegunn/fzf) — fuzzy finder de linha de comando (histórico, arquivos, etc.)
+- 📦 [most](https://www.jedsoft.org/most/) — paginador (tipo `less`) com cores e múltiplas janelas
 
-- [eza](https://github.com/eza-community/eza) — `ls` moderno com ícones, cores e coluna git; substitui exa
-- [doggo](https://github.com/mr-karan/doggo) — cliente DNS amigável (um `dig` moderno); substitui dog
-- [gitui](https://github.com/gitui-org/gitui) — TUI de Git rápida e leve (stage/commit/diff/log) em Rust
-- [lazygit](https://github.com/jesseduffield/lazygit) — TUI de Git completa, focada em produtividade
-- [lazydocker](https://github.com/jesseduffield/lazydocker) — TUI para Docker/Compose (containers, logs, stats)
-- [duf](https://github.com/muesli/duf) — `df` moderno: uso de disco e partições em tabelas coloridas
-- [yq](https://github.com/mikefarah/yq) — processador de YAML/JSON/XML (o "`jq` do YAML")
-- [ctop](https://github.com/bcicen/ctop) — `top` para containers, com métricas em tempo real
-- [k9s](https://github.com/derailed/k9s) — TUI para gerenciar e navegar clusters Kubernetes
-- [micro](https://github.com/micro-editor/micro) — editor de terminal moderno, com atalhos estilo GUI
-- [broot](https://github.com/Canop/broot) — navegador de árvore de diretórios com busca fuzzy
-- [fzf](https://github.com/junegunn/fzf) — fuzzy finder de linha de comando (histórico, arquivos, etc.)
-- [walk](https://github.com/antonmedv/walk) — navegador de arquivos TUI rápido, com ícones
-- [dysk](https://github.com/Canop/dysk) — uso de disco e filesystems montados em tabela detalhada
-- [jnv](https://github.com/ynqa/jnv) — explorador interativo de JSON com filtros `jq` ao vivo
-- [cloudflare-speed-cli](https://github.com/kavehtehrani/cloudflare-speed-cli) — teste de velocidade de internet via rede da Cloudflare (TUI)
+### Git
+
+- ⬢ [gitui](https://github.com/gitui-org/gitui) — TUI de Git rápida e leve (stage/commit/diff/log) em Rust
+- ⬢ [lazygit](https://github.com/jesseduffield/lazygit) — TUI de Git completa, focada em produtividade
+- 📦 [git-extras](https://github.com/tj/git-extras) — coleção de utilitários git extras (`git summary`, `git ignore`, `git undo`…)
+- 📦 [gitflow](https://github.com/nvie/gitflow/wiki/Linux) — extensões de branching Git Flow (feature/release/hotfix)
+
+### Containers & Kubernetes
+
+- ⬢ [lazydocker](https://github.com/jesseduffield/lazydocker) — TUI para Docker/Compose (containers, logs, stats)
+- ⬢ [ctop](https://github.com/bcicen/ctop) — `top` para containers, com métricas em tempo real
+- ⬢ [k9s](https://github.com/derailed/k9s) — TUI para gerenciar e navegar clusters Kubernetes
+
+### Sistema & disco
+
+- 📦 [htop](https://htop.dev/) — monitor de processos interativo
+- 📦 [btop](https://github.com/aristocratos/btop) — monitor de recursos (CPU/mem/rede/disco/processos) em TUI; substitui bpytop/glances
+- 📦 [ncdu](https://dev.yorhel.nl/ncdu) — analisador interativo de uso de disco (`du` em ncurses)
+- ⬢ [duf](https://github.com/muesli/duf) — `df` moderno: uso de disco e partições em tabelas coloridas
+- ⬢ [dysk](https://github.com/Canop/dysk) — uso de disco e filesystems montados em tabela detalhada
+
+### Rede
+
+- ⬢ [doggo](https://github.com/mr-karan/doggo) — cliente DNS amigável (um `dig` moderno); substitui dog
+- 📦 [mtr](https://www.bitwizard.nl/mtr/) — diagnóstico de rede combinando `ping` + `traceroute` (`mtr-tiny` no Linux)
+- ⬢ [cloudflare-speed-cli](https://github.com/kavehtehrani/cloudflare-speed-cli) — teste de velocidade de internet via rede da Cloudflare (TUI)
+
+### Dados (JSON/YAML)
+
+- 📦 [jq](https://jqlang.github.io/jq/) — processador de JSON na linha de comando
+- ⬢ [yq](https://github.com/mikefarah/yq) — processador de YAML/JSON/XML (o "`jq` do YAML")
+- ⬢ [jnv](https://github.com/ynqa/jnv) — explorador interativo de JSON com filtros `jq` ao vivo
+
+### Editor & ambiente
+
+- ⬢ [micro](https://github.com/micro-editor/micro) — editor de terminal moderno, com atalhos estilo GUI
+- 📦 [direnv](https://direnv.net/) — carrega/descarrega variáveis de ambiente por diretório (via `.envrc`)
 
 ## Shortcuts
 
