@@ -44,4 +44,4 @@ jobs:
           for b in eza doggo gitui lazygit lazydocker duf yq ctop k9s micro broot fzf walk dysk jnv btop bat fd; do
             command -v "$b" >/dev/null || { echo "FALTOU: $b"; exit 1; }
           done
-          chezmoi verify --exclude=scripts
+          chezmoi verify --source="$PWD" --exclude=scripts
