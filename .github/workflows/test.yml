@@ -34,12 +34,14 @@ jobs:
       - name: chezmoi init --apply
         env:
           CHEZMOI_GITHUB_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply --source "$PWD"
+        run: |
+          sh -c "$(curl -fsLS get.chezmoi.io)" -- \
+            -b "$HOME/.local/bin" init --apply --source="$PWD"
       - name: Validar binários (brew)
         run: |
           set -e
           export PATH="/opt/homebrew/bin:$HOME/.local/bin:$PATH"
-          for b in eza doggo gitui lazygit duf yq ctop k9s micro broot fzf walk dysk jnv btop bat fd; do
+          for b in eza doggo gitui lazygit lazydocker duf yq ctop k9s micro broot fzf walk dysk jnv btop bat fd; do
             command -v "$b" >/dev/null || { echo "FALTOU: $b"; exit 1; }
           done
-          "$HOME/bin/chezmoi" verify --exclude=scripts || chezmoi verify --exclude=scripts
+          chezmoi verify --exclude=scripts
