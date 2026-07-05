@@ -42,6 +42,7 @@ PACKAGES=(
     tree ncdu htop mtr jq direnv git-extras git-flow
     hashicorp/tap/terraform
     jsdelivr/globalping/globalping
+    mise
 )
 echo "==> brew: installing ${#PACKAGES[@]} formulae"
 brew install "${PACKAGES[@]}" || true

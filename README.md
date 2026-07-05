@@ -128,6 +128,7 @@ Origin: 📦 native package manager (apt on Linux / brew on macOS) · ⬢ GitHub
 
 - ⬢ [micro](https://github.com/micro-editor/micro) — modern terminal editor with GUI-style shortcuts
 - 📦 [direnv](https://direnv.net/) — loads/unloads environment variables per directory (via `.envrc`)
+- ⬢ [mise](https://github.com/jdx/mise) — polyglot runtime/tool version manager (node/python/go/rust/ruby…); asdf-compatible, reads `.tool-versions`/`mise.toml`. Default versions in `~/.config/mise/config.toml`; run `mise install` to fetch them
 
 ### AI coding
 

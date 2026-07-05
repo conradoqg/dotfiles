@@ -1,0 +1,9 @@
+# Global default toolchains managed by mise (https://mise.jdx.dev).
+# Per-project versions override these via .tool-versions or mise.toml.
+# Install/refresh the declared tools with:  mise install    (mise up to upgrade)
+# All of these install as prebuilt/precompiled binaries (fast, no build deps).
+[tools]
+node = "lts"
+python = "latest"
+go = "latest"
+rust = "latest"

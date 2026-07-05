@@ -255,4 +255,11 @@
     path = "terraform"
     executable = true
     refreshPeriod = "168h"
+
+# mise — polyglot runtime/tool version manager (asdf-compatible). Raw binary.
+[".local/bin/mise"]
+    type = "file"
+    url = {{ gitHubLatestReleaseAssetURL "jdx/mise" (printf "mise-*-linux-%s" (eq .chezmoi.arch "arm64" | ternary "arm64" "x64")) | quote }}
+    executable = true
+    refreshPeriod = "168h"
 {{- end }}
