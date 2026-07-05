@@ -142,7 +142,7 @@ Origin: 📦 native package manager (apt on Linux / brew on macOS) · ⬢ GitHub
 - <kbd>Ctrl</kbd> + <kbd>R</kbd>: fuzzy history search
 - <kbd>Ctrl</kbd> + <kbd>T</kbd>: paste a file/dir path into the command line
 - <kbd>Alt</kbd> + <kbd>C</kbd>: fuzzy `cd` into a subdirectory
-- <kbd>Alt</kbd> + <kbd>G</kbd>: jump to a bookmarked directory (fzf-marks; `mark` to add)
+- <kbd>Alt</kbd> + <kbd>G</kbd>: jump to a bookmarked directory (fzf-marks; `mark` to add, `dmark` to delete)
 - <kbd>TAB</kbd>: fuzzy completion menu (fzf-tab) — TAB drills into the selection and keeps completing, <kbd>Enter</kbd> accepts; <kbd>Alt</kbd>+<kbd>P</kbd> toggles preview, `[`/`]` switch group
 - `**` + <kbd>TAB</kbd>: fzf completion trigger for the current command
 
@@ -154,8 +154,8 @@ Origin: 📦 native package manager (apt on Linux / brew on macOS) · ⬢ GitHub
 - `m`: `micro`
 - `lg`: `lazygit`
 - `cm`: `chezmoi`
+- `k`: `kiro-cli`
 - `walk`: file browser with icons
-- `mark`: bookmark directory
 
 ## Scripts
 - `preview`: See the contents of a file or a dir
