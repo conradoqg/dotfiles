@@ -136,9 +136,12 @@ Origin: 📦 native package manager (apt on Linux / brew on macOS) · ⬢ GitHub
 
 ## Shortcuts
 
-- <kbd>Ctrl</kbd> + <kbd>H</kbd>: FZF History
-- <kbd>Ctrl</kbd> + <kbd>G</kbd>: FZF Bookmark
-- `**` + <kbd>TAB</kbd>: FZF Finder
+- <kbd>Ctrl</kbd> + <kbd>R</kbd>: fuzzy history search
+- <kbd>Ctrl</kbd> + <kbd>T</kbd>: paste a file/dir path into the command line
+- <kbd>Alt</kbd> + <kbd>C</kbd>: fuzzy `cd` into a subdirectory
+- <kbd>Alt</kbd> + <kbd>G</kbd>: jump to a bookmarked directory (fzf-marks; `mark` to add)
+- <kbd>TAB</kbd>: fuzzy completion menu (fzf-tab) — <kbd>Alt</kbd>+<kbd>P</kbd> toggles preview, `/` descends, `[`/`]` switch group
+- `**` + <kbd>TAB</kbd>: fzf completion trigger for the current command
 
 ## Aliases
 - `readme`: See this file

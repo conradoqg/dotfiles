@@ -35,12 +35,14 @@ export FZF_CTRL_R_OPTS="
 [[ -n "$_FZF_FD" ]] && export FZF_CTRL_T_COMMAND="$_FZF_FD --hidden --follow --exclude .git"
 export FZF_CTRL_T_OPTS="
 	--preview 'preview {}'
-	--header='ctrl-t: paste path'
+	--bind 'alt-p:toggle-preview'
+	--header='ctrl-t: paste path (alt-p: toggle preview)'
 "
 [[ -n "$_FZF_FD" ]] && export FZF_ALT_C_COMMAND="$_FZF_FD --type d --hidden --follow --exclude .git"
 export FZF_ALT_C_OPTS="
 	--preview 'eza -la --icons --color=always {} 2>/dev/null || ls -la {}'
-	--header='alt-c: cd'
+	--bind 'alt-p:toggle-preview'
+	--header='alt-c: cd (alt-p: toggle preview)'
 "
 # Enable fzf's own Ctrl-T / Alt-C widgets. This file is sourced before
 # fzf-history.zsh, which re-binds Ctrl-R to the custom history widget, so the
@@ -55,10 +57,10 @@ fi
 
 # --- `**<TAB>` completion ----------------------------------------------------
 export FZF_COMPLETION_OPTS="
-	--header 'tab: accept · space: toggle · ctrl-a: all · ctrl-v: preview'
+	--header 'tab: accept · space: toggle · ctrl-a: all · alt-p: preview'
 	--preview-window=:hidden
 	--preview 'preview {}'
-	--bind 'ctrl-v:toggle-preview'
+	--bind 'alt-p:toggle-preview'
 	--bind 'ctrl-a:toggle-all'
 	--bind 'tab:accept'
 	--bind 'space:toggle'
@@ -81,36 +83,41 @@ zstyle ':fzf-tab:*' switch-group '[' ']'
 # menu matches Ctrl-T/Alt-C. fzf-tab still computes its own height (grows with
 # the results, capped at ~2/3 of the screen).
 zstyle ':fzf-tab:*' use-fzf-default-opts yes
-# Type / to descend into the highlighted directory without closing the menu.
-zstyle ':fzf-tab:*' continuous-trigger '/'
+# TAB accepts the highlighted candidate and immediately continues completion
+# (e.g. drills into the selected directory); Enter accepts without continuing.
+zstyle ':fzf-tab:*' continuous-trigger 'tab'
 
 zstyle ':fzf-tab:*' fzf-bindings \
-	'ctrl-v:toggle-preview' \
+	'alt-p:toggle-preview' \
 	'ctrl-a:toggle-all' \
-	'tab:accept' \
 	'space:toggle'
 zstyle ':fzf-tab:*' fzf-flags \
-	'--header=tab: accept · space: toggle · ctrl-a: all · ctrl-v: preview' \
+	'--header=tab: continue · enter: accept · space: mark · ctrl-a: all · alt-p: preview' \
 	'--preview-window=:hidden'
 
-# Context-aware previews (shown on Ctrl-V; the (kill|ps) one is always visible).
+# Context-aware previews (shown on Alt-P; the (kill|ps) one is always visible).
 zstyle ':fzf-tab:complete:*:*' fzf-preview 'preview $realpath 2>/dev/null'
 zstyle ':fzf-tab:complete:cd:*' fzf-preview \
 	'eza -la --icons --color=always $realpath 2>/dev/null || ls -la $realpath'
-# Show the directory preview by default for cd (Ctrl-V still toggles it), and
+# Show the directory preview by default for cd (Alt-P still toggles it), and
 # give cd full adaptive height (~100%), overriding fzf-tab's 2/3 cap. fzf-flags
 # is appended last, so its --height wins over fzf-tab's computed value.
 zstyle ':fzf-tab:complete:cd:*' fzf-flags \
 	'--height=~100%' \
-	'--header=tab: accept · space: toggle · ctrl-a: all · ctrl-v: preview' \
+	'--header=tab: continue · enter: accept · space: mark · ctrl-a: all · alt-p: toggle preview' \
 	'--preview-window=right:55%:wrap'
 zstyle ':fzf-tab:complete:git-*:*' fzf-preview \
 	'git -c color.ui=always log --oneline -20 -- $realpath 2>/dev/null'
 zstyle ':fzf-tab:complete:(kill|ps):argument-rest' fzf-preview \
 	'ps --pid=$word -o pid,user,cmd --no-headers -ww 2>/dev/null'
-zstyle ':fzf-tab:complete:(kill|ps):argument-rest' fzf-flags '--preview-window=down:3:wrap'
+zstyle ':fzf-tab:complete:(kill|ps):argument-rest' fzf-flags \
+	'--header=tab: continue · enter: accept · space: mark · ctrl-a: all · alt-p: preview' \
+	'--preview-window=down:3:wrap'
 zstyle ':fzf-tab:complete:(export|unset|expand):*' fzf-preview 'echo ${(P)word} 2>/dev/null'
 
 # --- fzf-marks (bookmarks; the plugin lives in fzf-marks.zsh) ----------------
 # Set here (before the plugin) so it inherits the global adaptive height.
 export FZF_MARKS_COMMAND="fzf"
+# Jump-to-bookmark key. The default Ctrl-G is stolen by VS Code (go to line),
+# so use Alt-G (^[g) instead.
+export FZF_MARKS_JUMP='^[g'
