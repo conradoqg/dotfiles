@@ -54,6 +54,7 @@
     node_version            # node.js version (reflects the mise-active version)
     go_version              # go version (reflects the mise-active version)
     rust_version            # rustc version (reflects the mise-active version)
+    mise_python             # python version (custom segment; reflects the mise-active version)
     # dotnet_version        # .NET version (https://dotnet.microsoft.com)
     # php_version           # php version (https://www.php.net/)
     # laravel_version       # laravel php framework version (https://laravel.com/)
@@ -61,7 +62,6 @@
     # package               # name@version from package.json (https://docs.npmjs.com/files/package.json)
     kubecontext             # current kubernetes context (https://kubernetes.io/)
     terraform               # terraform workspace (https://www.terraform.io)
-    terraform_version       # terraform version (https://www.terraform.io)
     aws                     # aws profile (https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html)
     aws_eb_env              # aws elastic beanstalk environment (https://aws.amazon.com/elasticbeanstalk/)
     azure                   # azure account name (https://docs.microsoft.com/en-us/cli/azure)
@@ -1508,6 +1508,35 @@
   # typeset -g POWERLEVEL9K_TIME_VISUAL_IDENTIFIER_EXPANSION='⭐'
   # Custom prefix.
   typeset -g POWERLEVEL9K_TIME_PREFIX='%fat '
+
+  # Custom segment: show the mise-active Python version inside Python projects.
+  # p10k has no built-in python_version segment (python only shows via virtualenv/
+  # anaconda/pyenv), so this fills that gap analogously to node_version/go_version.
+  # No instant_prompt_* is defined on purpose, so `mise` is never run during instant
+  # prompt (it appears once the full prompt renders).
+  function prompt_mise_python() {
+    # Only inside a Python project: search markers up the tree, else any *.py in cwd.
+    local dir=$PWD found=
+    while true; do
+      if [[ -f $dir/pyproject.toml || -f $dir/setup.py || -f $dir/setup.cfg \
+         || -f $dir/requirements.txt || -f $dir/Pipfile || -f $dir/.python-version \
+         || -f $dir/tox.ini ]]; then
+        found=1; break
+      fi
+      [[ $dir == / ]] && break
+      dir=${dir:h}
+    done
+    if [[ -z $found ]]; then
+      local -a _py; _py=($PWD/*.py(N))
+      (( $#_py )) || return
+    fi
+    # Version comes from mise (fast Rust binary; `command` bypasses the mise shell function).
+    local v="${$(command mise current python 2>/dev/null)%%$'\n'*}"
+    [[ -n $v ]] || return
+    p10k segment -t "${v//\%/%%}"
+  }
+  typeset -g POWERLEVEL9K_MISE_PYTHON_FOREGROUND=37
+  typeset -g POWERLEVEL9K_MISE_PYTHON_VISUAL_IDENTIFIER_EXPANSION=$'\uE73C'
 
   # Example of a user-defined prompt segment. Function prompt_example will be called on every
   # prompt if `example` prompt segment is added to POWERLEVEL9K_LEFT_PROMPT_ELEMENTS or
