@@ -3,7 +3,7 @@ alias ls="eza -la --time-style long-iso --icons"
 alias m="micro"
 alias lg="lazygit"
 alias cm="chezmoi"
-alias k="kiro-cli"
+alias ki="kiro-cli"
 alias walk="walk --icons"
 
 # Portability: on Ubuntu the binaries are batcat/fdfind; on macOS/brew, bat/fd.
