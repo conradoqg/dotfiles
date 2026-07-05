@@ -121,3 +121,15 @@ export FZF_MARKS_COMMAND="fzf"
 # Jump-to-bookmark key. The default Ctrl-G is stolen by VS Code (go to line),
 # so use Alt-G (^[g) instead.
 export FZF_MARKS_JUMP='^[g'
+
+# --- Path editing: Alt+Backspace deletes one path segment (go up a level) ----
+# Companion to TAB drilling: if you drilled too deep, cancel the menu (Esc) and
+# press Alt+Backspace to drop the last "/segment", then TAB to re-complete from
+# the parent. It's a normal backward-kill-word with '/' treated as a boundary.
+backward-kill-dir() {
+	local WORDCHARS=${WORDCHARS//[\/]/}
+	zle backward-kill-word
+}
+zle -N backward-kill-dir
+bindkey '^[^?' backward-kill-dir   # Alt+Backspace (DEL)
+bindkey '^[^H' backward-kill-dir   # Alt+Backspace (some terminals send ^H)
