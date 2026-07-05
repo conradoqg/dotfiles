@@ -115,6 +115,8 @@ Origin: 📦 native package manager (apt on Linux / brew on macOS) · ⬢ GitHub
 - ⬢ [cloudflare-speed-cli](https://github.com/kavehtehrani/cloudflare-speed-cli) — internet speed test via Cloudflare's network (TUI)
 - ⬢ [miniserve](https://github.com/svenstaro/miniserve) — tiny HTTP file server with a browser upload UI
 - ⬢ [fortio](https://github.com/fortio/fortio) — HTTP/gRPC load testing tool with a web UI
+- ⬢ [globalping](https://github.com/jsdelivr/globalping-cli) — run network measurements (ping/traceroute/DNS/HTTP) from a global network of probes
+- ⬢ [ngrok](https://ngrok.com) — secure tunnels exposing a local port to the internet (run `ngrok config add-authtoken <token>` once; the token is a secret and is **not** stored in this repo)
 
 ### Data (JSON/YAML)
 

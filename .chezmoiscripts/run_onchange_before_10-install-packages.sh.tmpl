@@ -41,9 +41,11 @@ PACKAGES=(
     ripgrep zoxide git-delta miniserve fortio kubernetes-cli
     tree ncdu htop mtr jq direnv git-extras git-flow
     hashicorp/tap/terraform
+    jsdelivr/globalping/globalping
 )
 echo "==> brew: installing ${#PACKAGES[@]} formulae"
 brew install "${PACKAGES[@]}" || true
+brew install --cask ngrok || true   # ngrok is distributed as a cask on macOS
 
 {{ else -}}
 echo "WARNING: pkgManager '{{ .pkgManager }}' is not supported on this OS ({{ .os }})." >&2

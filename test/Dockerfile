@@ -37,7 +37,7 @@ RUN set -e; \
     echo "== validating binaries =="; \
     for b in eza doggo gitui lazygit lazydocker duf yq ctop k9s micro broot fzf \
              walk dysk jnv cloudflare-speed-cli btop \
-             rg zoxide delta miniserve fortio kubectl terraform; do \
+             rg zoxide delta miniserve fortio globalping ngrok kubectl terraform; do \
         command -v "$b" >/dev/null 2>&1 || { echo "MISSING: $b"; exit 1; }; \
     done; \
     eza --version >/dev/null; \

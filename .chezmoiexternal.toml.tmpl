@@ -224,6 +224,23 @@
     executable = true
     refreshPeriod = "168h"
 
+# globalping — network measurements (ping/traceroute/DNS/HTTP) from a global probe network
+[".local/bin/globalping"]
+    type = "archive-file"
+    url = {{ gitHubLatestReleaseAssetURL "jsdelivr/globalping-cli" (printf "globalping_Linux_%s.tar.gz" (eq .chezmoi.arch "arm64" | ternary "arm64" "x86_64")) | quote }}
+    path = "globalping"
+    executable = true
+    refreshPeriod = "168h"
+
+# ngrok — secure tunnels (run `ngrok config add-authtoken <token>` once; the token
+# is a secret and is NOT versioned). Binary from equinox (not GitHub); arch = amd64/arm64.
+[".local/bin/ngrok"]
+    type = "archive-file"
+    url = "https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-{{ .chezmoi.arch }}.tgz"
+    path = "ngrok"
+    executable = true
+    refreshPeriod = "168h"
+
 # kubectl — official binary from dl.k8s.io (stable tag via GitHub)
 [".local/bin/kubectl"]
     type = "file"
