@@ -105,7 +105,8 @@ function fzm {
         --expect='"$delete_key,$paste_key"' \
         --multi \
         --bind=tab:accept,space:toggle,ctrl-a:toggle-all \
-        --header='"tab:accept, space:toggle, ctrl-a:toggle-all, ${delete_key}:delete, ${paste_key}:paste"' \
+        --layout=reverse \
+        --header='"enter: jump · space: mark · ctrl-a: all · ${delete_key}: delete · ${paste_key}: paste"' \
         --query='"$*"' \
         --select-1 \
         --tac)
@@ -132,8 +133,8 @@ function jump {
         jumpline=$2
     else
         jumpline=$(_fzm_color_marks < "${FZF_MARKS_FILE}" | eval ${FZF_MARKS_COMMAND} \
-            --ansi \
-            --bind=tab:accept --header='"tab:accept"' \
+            --ansi --layout=reverse \
+            --bind=tab:accept --header='"enter: jump"' \
             --query='"$*"' --select-1 --tac)
     fi
     if [[ -n ${jumpline} ]]; then
@@ -154,8 +155,8 @@ function pmark {
         selected=$2
     else
         selected=$(_fzm_color_marks < "${FZF_MARKS_FILE}" | eval ${FZF_MARKS_COMMAND} \
-            --ansi \
-            --bind=tab:accept --header='"tab:accept"' \
+            --ansi --layout=reverse \
+            --bind=tab:accept --header='"enter: paste"' \
             --query='"$*"' --select-1 --tac)
     fi
     if [[ $selected ]]; then
@@ -171,8 +172,8 @@ function dmark {
         marks_to_delete=$2
     else
         marks_to_delete=$(_fzm_color_marks < "${FZF_MARKS_FILE}" | eval ${FZF_MARKS_COMMAND} \
-            -m --ansi \
-            --bind=tab:accept,space:toggle --header='"tab:accept, space:toggle, ctrl-d:delete"' \
+            -m --ansi --layout=reverse \
+            --bind=tab:accept,space:toggle --header='"enter: delete · space: mark"' \
             --query='"$*"' --tac)
     fi
     bookmarks=$(_fzm_handle_symlinks)

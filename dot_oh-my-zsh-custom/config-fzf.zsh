@@ -36,13 +36,13 @@ export FZF_CTRL_R_OPTS="
 export FZF_CTRL_T_OPTS="
 	--preview 'preview {}'
 	--bind 'alt-p:toggle-preview'
-	--header='ctrl-t: paste path (alt-p: toggle preview)'
+	--header='enter: paste · tab: select · alt-p: toggle preview'
 "
 [[ -n "$_FZF_FD" ]] && export FZF_ALT_C_COMMAND="$_FZF_FD --type d --hidden --follow --exclude .git"
 export FZF_ALT_C_OPTS="
 	--preview 'eza -la --icons --color=always {} 2>/dev/null || ls -la {}'
 	--bind 'alt-p:toggle-preview'
-	--header='alt-c: cd (alt-p: toggle preview)'
+	--header='enter: cd · alt-p: toggle preview'
 "
 # Enable fzf's own Ctrl-T / Alt-C widgets. This file is sourced before
 # fzf-history.zsh, which re-binds Ctrl-R to the custom history widget, so the
