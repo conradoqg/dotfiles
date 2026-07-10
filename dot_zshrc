@@ -79,7 +79,7 @@ ZSH_CUSTOM=~/.oh-my-zsh-custom
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git transfer command-not-found docker kubectl git-extras git-flow direnv sudo fzf fzf-tab zsh-autosuggestions fast-syntax-highlighting colored-man-pages you-should-use alias-finder)
+plugins=(git transfer command-not-found docker kubectl git-extras git-flow sudo fzf fzf-tab zsh-autosuggestions fast-syntax-highlighting colored-man-pages you-should-use alias-finder)
 
 DISABLE_FZF_KEY_BINDINGS=true
 
