@@ -145,6 +145,7 @@ Origin: 📦 native package manager (apt on Linux / brew on macOS) · ⬢ GitHub
 - <kbd>Alt</kbd> + <kbd>G</kbd>: jump to a bookmarked directory (fzf-marks; `mark` to add, `dmark` to delete)
 - <kbd>TAB</kbd>: fuzzy completion menu (fzf-tab) — TAB drills into the selection and keeps completing, <kbd>Enter</kbd> accepts; <kbd>Alt</kbd>+<kbd>P</kbd> toggles preview, `[`/`]` switch group
 - `**` + <kbd>TAB</kbd>: fzf completion trigger for the current command
+- `psf`: fuzzy process list (fzf over `ps`, sorted by CPU) — type to filter by name/user/PID, <kbd>SPACE</kbd> multi-select, <kbd>Enter</kbd> copies PID(s), <kbd>Ctrl</kbd>+<kbd>K</kbd> kills selection, <kbd>Ctrl</kbd>+<kbd>R</kbd> reloads
 
 ## Aliases
 - `readme`: See this file
