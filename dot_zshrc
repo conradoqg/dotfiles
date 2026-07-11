@@ -150,3 +150,22 @@ export PATH="$PATH:/snap/bin"
 
 # zoxide: smarter cd (provides `z`); no-op if not installed
 command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init zsh)"
+
+# psf: fuzzy-filterable process list (fzf over ps), sorted by CPU
+function psf {
+  local _psf_cmd='ps -eo pid,user,pcpu,pmem,stat,start,time,comm,args --no-headers --sort=-pcpu'
+  local _psf_snapshot _psf_columns_header
+  _psf_snapshot="$(ps -eo pid,user,pcpu,pmem,stat,start,time,comm,args --sort=-pcpu)"
+  _psf_columns_header="$(head -1 <<< "$_psf_snapshot")"
+  tail -n +2 <<< "$_psf_snapshot" | \
+    fzf --layout=reverse \
+        --multi \
+        --prompt="psf> " \
+        --header="SPACE select · ENTER copy PID(s) · ^K kill -9 · ^R reload
+${_psf_columns_header}" \
+        --bind="space:toggle+down" \
+        --bind="ctrl-r:reload(${_psf_cmd})" \
+        --bind="ctrl-k:execute(printf '%s\n' {+} | awk '{print \$1}' | xargs -r kill -9)+reload(${_psf_cmd})" \
+        --preview="ps ww -p {1} -o args= 2>/dev/null || echo '(process no longer running)'" \
+        --preview-window="down,6,wrap,border-top,noinfo"
+}
