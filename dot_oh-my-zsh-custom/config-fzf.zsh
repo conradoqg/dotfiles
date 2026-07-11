@@ -79,9 +79,8 @@ zstyle ':completion:*' menu no
 zstyle ':completion:*:descriptions' format '[%d]'
 zstyle ':fzf-tab:*' show-group full
 zstyle ':fzf-tab:*' switch-group '[' ']'
-# Inherit the global FZF_DEFAULT_OPTS (border, prompt, pointer, colors) so the
-# menu matches Ctrl-T/Alt-C. fzf-tab still computes its own height (grows with
-# the results, capped at ~2/3 of the screen).
+# Inherit the global look and adaptive height. The explicit height in fzf-flags
+# below is applied after fzf-tab's numeric height, so adaptive height wins.
 zstyle ':fzf-tab:*' use-fzf-default-opts yes
 # TAB accepts the highlighted candidate and immediately continues completion
 # (e.g. drills into the selected directory); Enter accepts without continuing.
@@ -92,6 +91,8 @@ zstyle ':fzf-tab:*' fzf-bindings \
 	'ctrl-a:toggle-all' \
 	'space:toggle'
 zstyle ':fzf-tab:*' fzf-flags \
+	'--height=~100%' \
+	'--min-height=10+' \
 	'--header=tab: continue · enter: accept · space: mark · ctrl-a: all · alt-p: preview' \
 	'--preview-window=:hidden'
 
@@ -111,6 +112,8 @@ zstyle ':fzf-tab:complete:git-*:*' fzf-preview \
 zstyle ':fzf-tab:complete:(kill|ps):argument-rest' fzf-preview \
 	'ps --pid=$word -o pid,user,cmd --no-headers -ww 2>/dev/null'
 zstyle ':fzf-tab:complete:(kill|ps):argument-rest' fzf-flags \
+	'--height=~100%' \
+	'--min-height=10+' \
 	'--header=tab: continue · enter: accept · space: mark · ctrl-a: all · alt-p: preview' \
 	'--preview-window=down:3:wrap'
 zstyle ':fzf-tab:complete:(export|unset|expand):*' fzf-preview 'echo ${(P)word} 2>/dev/null'
