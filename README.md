@@ -99,6 +99,8 @@ Origin: 📦 native package manager (apt on Linux / brew on macOS) · ⬢ GitHub
 - ⬢ [terraform](https://github.com/hashicorp/terraform) — infrastructure as code (HashiCorp; BSL license)
 - 🔧 [aws-cli](https://aws.amazon.com/cli/) — AWS command-line interface (v2)
 - 🔧 [gcloud](https://cloud.google.com/sdk/gcloud) — Google Cloud CLI
+- 🔧 [gh](https://cli.github.com/) — GitHub CLI
+- 🔧 [az](https://learn.microsoft.com/en-us/cli/azure/) — Azure CLI, with the [azure-devops](https://github.com/Azure/azure-devops-cli-extension) extension (`az devops`)
 
 ### System & disk
 

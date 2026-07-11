@@ -1,0 +1,54 @@
+#!/bin/bash
+# Installs DevOps CLIs: GitHub CLI (gh) and Azure CLI (az) + the azure-devops
+# extension (`az devops`). Idempotent (guards on `command -v`) and non-fatal
+# (a failing installer warns but does not abort the rest).
+#
+#   os         = {{ .os }}
+#   pkgManager = {{ .pkgManager }}
+{{ if env "DOTFILES_NO_PROVISION" -}}
+: # DevOps CLIs skipped (DOTFILES_NO_PROVISION set)
+{{ else -}}
+set -uo pipefail   # no -e: keep going if one installer fails
+
+SUDO=""
+if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null 2>&1; then SUDO="sudo"; fi
+
+{{ if eq .pkgManager "brew" -}}
+command -v gh >/dev/null 2>&1 || brew install gh        || echo "warn: gh install failed"
+command -v az >/dev/null 2>&1 || brew install azure-cli || echo "warn: az install failed"
+
+{{ else if eq .pkgManager "apt" -}}
+# GitHub CLI — official apt repository
+if ! command -v gh >/dev/null 2>&1; then
+    echo "==> installing GitHub CLI"
+    if command -v wget >/dev/null 2>&1; then
+        $SUDO mkdir -p -m 755 /etc/apt/keyrings
+        out="$(mktemp)"
+        if wget -nv -O "$out" https://cli.github.com/packages/githubcli-archive-keyring.gpg; then
+            $SUDO install -D -m 644 "$out" /etc/apt/keyrings/githubcli-archive-keyring.gpg
+            $SUDO chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg
+            echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" \
+                | $SUDO tee /etc/apt/sources.list.d/github-cli.list >/dev/null
+            $SUDO apt-get update -qq && $SUDO apt-get install -y gh || echo "warn: gh install failed"
+        else
+            echo "warn: could not download GitHub CLI signing key"
+        fi
+        rm -f "$out"
+    else
+        echo "warn: gh needs wget; skipping"
+    fi
+fi
+
+# Azure CLI — official Microsoft installer (adds its own apt repository)
+if ! command -v az >/dev/null 2>&1; then
+    echo "==> installing Azure CLI"
+    curl -sL https://aka.ms/InstallAzureCLIDeb | $SUDO bash || echo "warn: az install failed"
+fi
+{{ end -}}
+
+# Azure DevOps extension (`az devops`) — requires Azure CLI
+if command -v az >/dev/null 2>&1 && ! az extension show --name azure-devops >/dev/null 2>&1; then
+    echo "==> installing az devops extension"
+    az extension add --name azure-devops --only-show-errors || echo "warn: azure-devops extension install failed"
+fi
+{{ end -}}
