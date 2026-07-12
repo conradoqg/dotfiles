@@ -139,14 +139,16 @@ function lk {
   cd "$(walk "$@")"
 }
 
-export PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
-
 # opencode
 export PATH=/home/conradoqg/.opencode/bin:$PATH
 
 # Added by codebase-memory-mcp install
 export PATH="/home/conradoqg/.local/bin:$PATH"
 export PATH="$PATH:/snap/bin"
+
+# Keep tool resolution consistent across shells and AI harnesses.
+# mise must be activated after all manual PATH changes.
+eval "$(mise activate zsh)"
 
 # zoxide: smarter cd (provides `z`); no-op if not installed
 command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init zsh)"

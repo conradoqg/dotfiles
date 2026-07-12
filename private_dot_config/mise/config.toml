@@ -4,6 +4,6 @@
 # All of these install as prebuilt/precompiled binaries (fast, no build deps).
 [tools]
 node = "lts"
-python = "latest"
+python = "3.12.13"
 go = "latest"
 rust = "latest"
