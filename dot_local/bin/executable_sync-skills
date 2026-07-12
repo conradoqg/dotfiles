@@ -1,0 +1,160 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+PUBLIC_REMOTE="${PUBLIC_SKILLS_SOURCE:-conradoqg/agent-skills}"
+PRIVATE_REMOTE="${PRIVATE_SKILLS_SOURCE:-git@github.com:conradoqg/private-agent-skills.git}"
+REPOS_ROOT="${PERSONAL_REPOS_ROOT:-$HOME/Repos/pessoal}"
+
+FIND_SKILLS_SOURCE="${FIND_SKILLS_SOURCE:-vercel-labs/skills}"
+AUTORESEARCH_SOURCE="${AUTORESEARCH_SKILLS_SOURCE:-balukosuri/Andrej-Karpathy-s-Autoresearch-As-a-Universal-Skill}"
+
+mode="remote"
+dry_run=0
+copy_mode=0
+list_only=0
+include_public=1
+include_private=1
+include_external=1
+
+usage() {
+  cat <<'EOF'
+Usage: sync-skills [options]
+
+Synchronize the declared global skill set for Kiro CLI and Codex. Re-running
+the command refreshes skills from their sources and restores missing skills.
+
+Options:
+  --local          Use ~/Repos/pessoal for owned catalogs; externals stay remote.
+  --copy           Copy skills instead of using CLI-managed links.
+  --list           List installed global skills for Kiro and Codex.
+  --dry-run        Print exact commands without executing them.
+  --public-only    Sync only conradoqg/agent-skills.
+  --private-only   Sync only conradoqg/private-agent-skills.
+  --external-only  Sync only selected upstream external skills.
+  --no-externals   Sync owned catalogs but skip external sources.
+  -h, --help       Show this help.
+
+Environment overrides:
+  PERSONAL_REPOS_ROOT, PUBLIC_SKILLS_SOURCE, PRIVATE_SKILLS_SOURCE,
+  FIND_SKILLS_SOURCE, AUTORESEARCH_SKILLS_SOURCE
+EOF
+}
+
+die() { printf 'error: %s\n' "$*" >&2; exit 1; }
+
+print_command() {
+  printf '  '
+  printf '%q ' "$@"
+  printf '\n'
+}
+
+run() {
+  print_command "$@"
+  (( dry_run )) || "$@"
+}
+
+while (( $# )); do
+  case "$1" in
+    --local) mode="local" ;;
+    --copy) copy_mode=1 ;;
+    --list) list_only=1 ;;
+    --dry-run) dry_run=1 ;;
+    --public-only) include_public=1; include_private=0; include_external=0 ;;
+    --private-only) include_public=0; include_private=1; include_external=0 ;;
+    --external-only) include_public=0; include_private=0; include_external=1 ;;
+    --no-externals) include_external=0 ;;
+    -h|--help) usage; exit 0 ;;
+    *) die "unknown option: $1" ;;
+  esac
+  shift
+done
+
+command -v npx >/dev/null 2>&1 || die "npx is required"
+
+if (( list_only )); then
+  run npx -y skills list -g -a kiro-cli -a codex
+  exit 0
+fi
+
+if [[ "$mode" == "local" ]]; then
+  public_source="${PUBLIC_SKILLS_SOURCE:-$REPOS_ROOT/agent-skills}"
+  private_source="${PRIVATE_SKILLS_SOURCE:-$REPOS_ROOT/private-agent-skills}"
+  (( ! include_public )) || [[ -d "$public_source" ]] || die "missing local checkout: $public_source"
+  (( ! include_private )) || [[ -d "$private_source" ]] || die "missing local checkout: $private_source"
+else
+  public_source="$PUBLIC_REMOTE"
+  private_source="$PRIVATE_REMOTE"
+fi
+
+sync_entry() {
+  local label="$1" source="$2" agents_csv="$3"
+  shift 3
+  local -a skills=("$@") command=(npx -y skills add "$source")
+  local skill agent
+  for skill in "${skills[@]}"; do command+=(--skill "$skill"); done
+  IFS=',' read -r -a agents <<<"$agents_csv"
+  for agent in "${agents[@]}"; do command+=(-a "$agent"); done
+  command+=(-g -y)
+  (( ! copy_mode )) || command+=(--copy)
+  printf '%s:\n' "$label"
+  run "${command[@]}"
+}
+
+sync_kiro_only() {
+  local label="$1" catalog_source="$2" skill="$3"
+  local kiro_skills_dir="${KIRO_HOME:-$HOME/.kiro}/skills"
+  local source_dir="$catalog_source/skills/$skill"
+  local checkout=""
+
+  printf '%s:\n' "$label"
+  if [[ "$mode" != "local" ]]; then
+    checkout="$(mktemp -d)"
+    if (( dry_run )); then
+      print_command git clone --depth 1 "$catalog_source" "$checkout/repo"
+      source_dir="$checkout/repo/skills/$skill"
+    else
+      git clone --depth 1 "$catalog_source" "$checkout/repo"
+      source_dir="$checkout/repo/skills/$skill"
+    fi
+  fi
+
+  if (( dry_run )); then
+    printf '  replace %q with %q (Kiro directory only)\n' \
+      "$kiro_skills_dir/$skill" "$source_dir"
+    [[ -z "$checkout" ]] || rm -rf "$checkout"
+    return
+  fi
+
+  [[ -d "$source_dir" ]] || die "missing skill in catalog: $source_dir"
+  mkdir -p "$kiro_skills_dir"
+  local staged
+  staged="$(mktemp -d "$kiro_skills_dir/.${skill}.XXXXXX")"
+  cp -a "$source_dir/." "$staged/"
+  [[ "$kiro_skills_dir/$skill" != "$kiro_skills_dir" ]] || die "unsafe Kiro skill target"
+  rm -rf "$kiro_skills_dir/$skill"
+  mv "$staged" "$kiro_skills_dir/$skill"
+  [[ -z "$checkout" ]] || rm -rf "$checkout"
+}
+
+if (( include_public )); then
+  sync_entry "Owned public catalog -> Kiro, Codex" "$public_source" "kiro-cli,codex" '*'
+fi
+
+if (( include_private )); then
+  sync_entry "Personal reports -> Kiro, Codex" "$private_source" "kiro-cli,codex" \
+    daily-status-summary weekly-status-summary
+  sync_kiro_only "Kiro usage forecast -> Kiro only" "$private_source" usage-forecast
+fi
+
+if (( include_external )); then
+  sync_entry "Find Skills -> Kiro, Codex" "$FIND_SKILLS_SOURCE" \
+    "kiro-cli,codex" find-skills
+  sync_entry "Autoresearch Universal -> Kiro, Codex" "$AUTORESEARCH_SOURCE" \
+    "kiro-cli,codex" autoresearch-universal
+fi
+
+if (( dry_run )); then
+  printf 'Dry run complete; no skills were changed.\n'
+else
+  printf 'Skill synchronization complete. Inspect with: sync-skills --list\n'
+fi
