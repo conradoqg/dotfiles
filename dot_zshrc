@@ -171,3 +171,42 @@ ${_psf_columns_header}" \
         --preview="ps ww -p {1} -o args= 2>/dev/null || echo '(process no longer running)'" \
         --preview-window="down,6,wrap,border-top,noinfo"
 }
+
+# Histórico persistente, sem compartilhamento automático entre terminais.
+HISTFILE=~/.zsh_history
+HISTSIZE=50000
+SAVEHIST=50000
+unsetopt share_history
+unsetopt inc_append_history_time
+unsetopt inc_append_history
+setopt hist_ignore_dups
+setopt hist_ignore_space
+
+# ↑/↓ ficam limitados ao histórico existente quando esta sessão iniciou.
+typeset -gi _zsh_local_history_start=0
+function _zsh_capture_local_history_start {
+  (( _zsh_local_history_start )) || _zsh_local_history_start=$HISTCMD
+}
+autoload -Uz add-zsh-hook
+add-zsh-hook precmd _zsh_capture_local_history_start
+function widget-local-history-up {
+  local old_buffer=$BUFFER old_cursor=$CURSOR old_mark=$MARK
+  zle .up-line-or-beginning-search
+  if (( HISTNO && HISTNO < _zsh_local_history_start )); then
+    BUFFER=$old_buffer; CURSOR=$old_cursor; MARK=$old_mark
+  fi
+}
+function widget-local-history-down {
+  local old_buffer=$BUFFER old_cursor=$CURSOR old_mark=$MARK
+  local local_history_latest=$HISTCMD
+  zle .down-line-or-beginning-search
+  if (( HISTNO && HISTNO > local_history_latest )); then
+    BUFFER=$old_buffer; CURSOR=$old_cursor; MARK=$old_mark
+  fi
+}
+zle -N widget-local-history-up
+zle -N widget-local-history-down
+bindkey '^[[A' widget-local-history-up
+bindkey '^[[B' widget-local-history-down
+# Override fzf-history-widget: Ctrl+R must search the complete history normally.
+bindkey '^R' fzf-history-widget
