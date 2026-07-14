@@ -143,7 +143,7 @@ fi
 if (( include_private )); then
   sync_entry "Personal reports -> Kiro, Codex" "$private_source" "kiro-cli,codex" \
     daily-status-summary weekly-status-summary
-  sync_kiro_only "Kiro usage forecast -> Kiro only" "$private_source" usage-forecast
+  sync_kiro_only "Kiro usage forecast -> Kiro only" "$private_source" usage-advanced
 fi
 
 if (( include_external )); then
