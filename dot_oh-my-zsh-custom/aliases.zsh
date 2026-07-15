@@ -5,6 +5,7 @@ alias lg="lazygit"
 alias cm="chezmoi"
 alias ki="kiro-cli"
 alias walk="walk --icons"
+alias ngrok-here='ngrok http file://$(pwd)'
 
 # Portability: on Ubuntu the binaries are batcat/fdfind; on macOS/brew, bat/fd.
 command -v batcat >/dev/null 2>&1 && alias bat="batcat"
